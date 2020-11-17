@@ -35,13 +35,13 @@ router.get('/', function(req, res, next) {
         let result = data.result;
         
         let dateFormatOptions = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric', 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
         };
         let formattedDate = result.orderDate.toLocaleDateString("en-US", dateFormatOptions);
 
