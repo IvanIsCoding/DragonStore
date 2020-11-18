@@ -4,8 +4,9 @@ const sql = require('mssql');
 
 router.get('/', function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
-    res.write("<title>YOUR NAME Grocery</title>")
+    res.write("<title>DBs and Dragons Product List</title>")
 
+    // TODO: Handle name filtering & add HTML form elements
     // Get the product name to search for
     let name = req.query.productName;
     
@@ -14,20 +15,65 @@ router.get('/', function(req, res, next) {
 
     /** Create and validate connection **/
 
-    /** Print out the ResultSet **/
+    let createProductRow = (product) => {
+        let result = product.result;
+        return `
+        <tr>
+            <td> <a href="addcart?id=${result.productId}&name=${result.productName}&price=${result.productPrice}"> Add to Cart </a> </td> 
+            <td>${result.productName}</td> 
+            <td>\$${result.productPrice.toFixed(2)}</td>
+        </tr>
+        `;
+    };
 
-    /** 
-    For each product create a link of the form
-    addcart?id=<productId>&name=<productName>&price=<productPrice>
-    **/
+    let createRows = (productList) => {
+        return productList.map(createProductRow).join('\n');
+    };
 
-    /**
-        Useful code for formatting currency:
-        let num = 2.89999;
-        num = num.toFixed(2);
-    **/
+    let writeProducts = (res, productList) => {
+        res.write(
+            `
+            <h2>All Products</h2>
+            <table>
+                <tr>
+                    <th> </th> <th>Product Name</th> <th>Price</th>
+                </tr>
+                ${createRows(productList)}
+            </table>
+            `
+        );
+    };
 
-    res.end();
+    (async function() {
+        try {
+            let pool = await sql.connect(dbConfig);
+
+            let sqlQuery = `
+                SELECT 
+                    productId,
+                    productName,
+                    productPrice
+                FROM product
+            `;
+
+            let results = await pool.request().query(sqlQuery);
+            let productList = [];
+
+            for (let result of results.recordset) {
+                productList.push({'result': result});
+            };
+
+            writeProducts(res, productList);
+
+        } catch(err) {
+            console.dir(err);
+            res.write(err)
+        }
+        finally {
+            res.end();
+        }
+    })();
+
 });
 
 module.exports = router;
