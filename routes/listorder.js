@@ -5,10 +5,14 @@ const moment = require('moment');
 
 router.get('/', function(req, res, next) {
 
+    res.setHeader('Content-Type', 'text/html');
+    res.write('<title>DBs and Dragons Grocery Order List</title>');
+
+    /* Start of utilities to write orders list */
     let createProductRow = (subResult) => {
         return `
         <tr> 
-            <td>${subResult.productId}</td> <td>${subResult.quantity}</td> <td>${subResult.price.toFixed(2)}</td> 
+            <td>${subResult.productId}</td> <td>${subResult.quantity}</td> <td>\$${subResult.price.toFixed(2)}</td> 
         </tr>
         `;
     };
@@ -70,9 +74,7 @@ router.get('/', function(req, res, next) {
             `
         );
     };
-
-    res.setHeader('Content-Type', 'text/html');
-    res.write('<title>DBs and Dragons Grocery Order List</title>');
+    /* End of utilities to write orders list */
 
     (async function() {
         try {
