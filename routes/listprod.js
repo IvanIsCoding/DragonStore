@@ -3,18 +3,26 @@ const router = express.Router();
 const sql = require('mssql');
 
 router.get('/', function(req, res, next) {
+    
     res.setHeader('Content-Type', 'text/html');
     res.write("<title>DBs and Dragons Product List</title>")
+    res.write(
+        `
+        <h1> Search products: </h1>
+        <form method="get" action="listprod">
+            <input type="text" name="productName" size="40">
+            <input type="submit" value="Search"> <input type="reset" value="Clear">
+        </form>
+        `
+    );
 
-    // TODO: Handle name filtering & add HTML form elements
-    // Get the product name to search for
+
     let name = req.query.productName;
-    
-    /** $name now contains the search string the user entered
-     Use it to build a query and print out the results. **/
+    if(name === undefined) { // handle case equivalent to empty case
+        name = '';
+    }
 
-    /** Create and validate connection **/
-
+    /* Start of utilities to write product list */
     let createProductRow = (product) => {
         let result = product.result;
         return `
@@ -43,6 +51,7 @@ router.get('/', function(req, res, next) {
             `
         );
     };
+    /* End of utilities to write product list */
 
     (async function() {
         try {
@@ -54,9 +63,14 @@ router.get('/', function(req, res, next) {
                     productName,
                     productPrice
                 FROM product
+                WHERE productName LIKE CONCAT('%', @param, '%')
             `;
 
-            let results = await pool.request().query(sqlQuery);
+            const ps = new sql.PreparedStatement(pool);
+            ps.input('param', sql.VarChar(40));
+            await ps.prepare(sqlQuery);
+
+            let results = await ps.execute({param: name});
             let productList = [];
 
             for (let result of results.recordset) {
