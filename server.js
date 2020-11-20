@@ -56,7 +56,7 @@ app.use('/order', order);
 // Rendering the main page
 app.get('/', function (req, res) {
   res.render('index', {
-    title: "YOUR NAME Grocery Main Page"
+    title: "DBs and Dragons Grocery Main Page"
   });
 })
 
