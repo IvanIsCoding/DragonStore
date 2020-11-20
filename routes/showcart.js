@@ -55,6 +55,7 @@ router.get('/', function(req, res, next) {
                     </tr>
                 </table>
 
+                <h2><a href="checkout">Check Out</a></h2>
                 <h2><a href="listprod">Continue Shopping</a></h2>
                 `
             );
