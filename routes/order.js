@@ -3,13 +3,28 @@ const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
 
-router.get('/', function(req, res, next) {
+function checkAuthentication(req, res, next) {
+    if (req.session.authentication && req.session.authentication.authenticated) {
+        next();
+    }
+    else {
+        req.session.invalidPassword = true;
+        res.redirect("/checkout");
+    }
+}
+
+router.get('/', checkAuthentication, function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
     res.write("<title>YOUR NAME Grocery Order Processing</title>");
 
     let productList = false;
     if (req.session.productList && req.session.productList.length > 0) {
         productList = req.session.productList;
+    }
+
+    let customerId = false;
+    if (req.session.authentication && req.session.authentication.customerId) {
+        customerId = req.session.authentication.customerId;
     }
 
     /**
