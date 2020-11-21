@@ -10,6 +10,7 @@ let updateCart = require('./routes/updatecart');
 let removeCart = require('./routes/removecart');
 let showCart = require('./routes/showcart');
 let checkout = require('./routes/checkout');
+let customerAuthentication = require('./routes/customerauthentication');
 let order = require('./routes/order');
 
 const app = express();
@@ -55,6 +56,7 @@ app.use('/updatecart', updateCart);
 app.use('/removecart', removeCart);
 app.use('/showcart', showCart);
 app.use('/checkout', checkout);
+app.use('/customerauthentication', customerAuthentication);
 app.use('/order', order);
 
 // Rendering the main page
