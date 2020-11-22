@@ -14,6 +14,39 @@ function checkAuthentication(req, res, next) {
     }
 }
 
+/* Start of utilities */
+
+const createProductRows = (productList) => {
+    return ``;
+};
+
+const writeOrders = (res, productList) => {
+
+    let orderId = 1157;
+    let customerId = 1;
+    let customerName = 'Elias Pinno';
+
+    res.write(
+        `
+        <table>
+            <tr> 
+                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
+            </tr>
+            ${createProductRows(productList)}
+        </table>
+        <h1>Order completed.  Will be shipped soon...</h1>
+        <h1>Your order reference number is: ${orderId}</h1>
+        <h1>Shipping to customer: ${customerId} Name: ${customerName}</h1>
+                                            
+
+        <h2><a href="shop.html">Back to Main Page</a></h2>
+        `
+    );
+
+};
+/* End of utilities */
+
+
 router.get('/', checkAuthentication, function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
     res.write("<title>DBs and Dragons Grocery Order List</title>");
@@ -29,14 +62,43 @@ router.get('/', checkAuthentication, function(req, res, next) {
     if (req.session.authentication && req.session.authentication.customerId) {
         customerId = req.session.authentication.customerId;
     }
-
     
     //req.session has session variables
     //req.query - get request data
 
     (async function() {
-        let pool = await sql.connect(dbConfig)
-        res.write('<h1>DBs and Dragons Grocery Order List</h1>');
+        try {
+            let pool = await sql.connect(dbConfig);
+            let sqlQuery = `
+                SELECT 
+                customerId,
+                firstName,
+                
+                FROM customer
+            `;
+
+
+            for (let result of results.recordset) {
+
+                const ps = new sql.PreparedStatement(pool);
+                ps.input('param', sql.Int);
+                await ps.prepare(subQuery);
+
+                let subResults = await ps.execute({param: result.orderId});
+
+                orderListData.push({'result': result, 'subResults': subResults.recordset});
+
+            };
+
+            writeOrders(res, orderListData);
+
+        } catch(err) {
+            console.dir(err);
+            res.write(err)
+        }
+        finally {
+            res.end();
+        }
     })();
 
     /**
