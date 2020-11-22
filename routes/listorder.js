@@ -2,89 +2,31 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
-const writeHeader = require('../shared_functions/header');
+
+/* Start of Handlebars helpers */
+const formatPrice = (price) => {
+    return `\$${Number(price).toFixed(2)}`
+};
+
+const formatDate = (orderDate) => {
+    let dateFormatOptions = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+    };
+    let formattedDate = orderDate.toLocaleDateString("en-US", dateFormatOptions);
+    return formattedDate;
+};
+/* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
 
-    writeHeader(res, `DBs and Dragons Grocery Order List`, `listorder`);
-
-    /* Start of utilities to write orders list */
-    let createProductRow = (subResult) => {
-        return `
-        <tr> 
-            <td>${subResult.productId}</td> <td>${subResult.quantity}</td> <td>\$${subResult.price.toFixed(2)}</td> 
-        </tr>
-        `;
-    };
-
-    let createProducts = (subResults) => {
-        return subResults.map(createProductRow).join('\n');
-    };
-
-    let createProductTable = (subResults) => {
-        return `
-        <tr align="right">
-            <td colspan="5">
-                <table class="dragon-table noround">
-                    <thead>
-                        <th>Product Id</th> <th>Quantity</th> <th>Price</th>
-                    </thead>
-                    <tbody>
-                        ${createProducts(subResults)}
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        `;
-    };
-
-    let createTableRow = (data) => {
-        
-        let result = data.result;
-        
-        let dateFormatOptions = { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        };
-        let formattedDate = result.orderDate.toLocaleDateString("en-US", dateFormatOptions);
-
-        return `
-        <tr> 
-            <td>${result.orderId}</td> <td>${formattedDate}</td> <td>${result.customerId}</td> 
-            <td>${result.customerName}</td> <td>\$${result.total.toFixed(2)}</td>
-            ${createProductTable(data.subResults)}
-        </tr>
-        `;
-    };
-
-    let createRows = (orderListData) => {
-        return orderListData.map(createTableRow).join('\n');
-    };
-
-    let writeTable = (res, orderListData) => {
-        res.write(
-            `
-            <table class="dragon-table" align="center">
-                <thead>
-                    <tr> 
-                        <th>Order Id</th> <th>Order Date</th> <th>Customer Id</th> <th>Customer Name</th> <th>Total Amount</th> 
-                    </tr>
-                </thead>
-                <tbody>
-                    ${createRows(orderListData)}
-                </tbody>
-            </table>
-            `
-        );
-    };
-    /* End of utilities to write orders list */
-
     let pool;
+    let orderListData;
     (async function() {
         try {
             pool = await sql.connect(dbConfig);
@@ -117,7 +59,7 @@ router.get('/', function(req, res, next) {
             `;
 
             let results = await pool.request().query(sqlQuery);
-            let orderListData = [];
+            orderListData = [];
 
             for (let result of results.recordset) {
 
@@ -131,7 +73,7 @@ router.get('/', function(req, res, next) {
 
             };
 
-            writeTable(res, orderListData);
+            //writeTable(res, orderListData);
 
         } catch(err) {
             console.dir(err);
@@ -139,9 +81,22 @@ router.get('/', function(req, res, next) {
         }
         finally {
             pool.close();
-            res.end();
         }
-    })();
+    })().then(() => {
+        res.render('listorder', {
+            title: 'DBs and Dragons Grocery Order List',
+            orderListData: orderListData,
+            pageActive: {'listorder': true},
+            helpers: {
+                formatPrice,
+                formatDate
+            }
+        });
+    }).catch((err) => {
+        console.dir(err);
+        res.write(err);
+        res.end();
+    });
 });
 
 module.exports = router;
