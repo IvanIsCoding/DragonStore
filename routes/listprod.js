@@ -75,9 +75,10 @@ router.get('/', function(req, res, next) {
     };
     /* End of utilities to write product list */
 
+    let pool;
     (async function() {
         try {
-            let pool = await sql.connect(dbConfig);
+            pool = await sql.connect(dbConfig);
 
             let sqlQuery = `
                 SELECT 
@@ -123,6 +124,7 @@ router.get('/', function(req, res, next) {
             res.write(err)
         }
         finally {
+            pool.close();
             res.end();
         }
     })();
