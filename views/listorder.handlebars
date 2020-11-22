@@ -1,0 +1,36 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<table class="dragon-table" align="center">
+    <thead>
+        <tr> 
+            <th>Order Id</th> <th>Order Date</th> <th>Customer Id</th> <th>Customer Name</th> <th>Total Amount</th> 
+        </tr>
+    </thead>
+    <tbody>
+    {{#each orderListData as | data |}}
+    	<tr> 
+            <td>{{result.orderId}}</td> <td>{{formatDate result.orderDate}}</td> <td>{{result.customerId}}</td> 
+            <td>{{result.customerName}}</td> <td>{{formatPrice result.total}}</td>
+            <tr align="right">
+	            <td colspan="5">
+	                <table class="dragon-table noround">
+	                    <thead>
+	                        <th>Product Id</th> <th>Quantity</th> <th>Price</th>
+	                    </thead>
+	                    <tbody>
+	                    {{#each subResults as | subResult |}}
+	                    	<tr> 
+					            <td>{{productId}}</td> <td>{{quantity}}</td> 
+					            <td>{{formatPrice price}}</td> 
+					        </tr>
+	                    {{/each}}
+	                    </tbody>
+	                </table>
+	            </td>
+        	</tr>
+        </tr>
+    {{/each}}  
+    </tbody>
+</table>

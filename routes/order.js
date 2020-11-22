@@ -2,7 +2,16 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
-const writeHeader = require('../shared_functions/header');
+
+/* Start of Handlebars helpers */
+const formatPrice = (price) => {
+    return `\$${Number(price).toFixed(2)}`
+};
+
+const formatMultiplicationPrice = (product) => {
+    return `\$${(Number(product.price)*Number(product.quantity)).toFixed(2)}`;
+};
+/* End of Handlebars helpers */
 
 // Authenticates that you have previously inputted a valid password by the time you have arrived here
 function checkAuthentication(req, res, next) {
@@ -15,65 +24,7 @@ function checkAuthentication(req, res, next) {
     }
 }
 
-/* Start of utilities */
-const createProductRow = (product) =>{
-    return `
-    <tr> 
-    <td>${product.id}</td>
-    <td>${product.name}</td>
-    <td>${product.quantity}</td>
-    <td>\$${Number(product.price).toFixed(2)}</td>
-    <td>\$${Number(product.price*product.quantity).toFixed(2)}</td>
-    </tr>
-    `
-};
-
-const createProductRows = (productList) => {
-    // Create the Product row for every product in product list
-    // Join the returned strings all together, with new line characters in between each
-    return productList.map(createProductRow).join('\n');
-};
-
-const writeOrders = (res, productList, customerData, orderId, total) => {
-    let customerId = customerData[0].customerId; // Get the customer data
-    let customerName = `${customerData[0].firstName} ${customerData[0].lastName}`;
-    // Write the SQL, with our functions embedded
-    res.write(
-        `
-        <h1> Your Order Summary </h1>
-        <table class="dragon-table" >
-            <thead>
-                <tr> 
-                    <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${createProductRows(productList)}
-            </tbody>
-        <tfoot>
-            <tr align="right">
-                <th id="total" colspan="3">Total: </th>
-            <td>\$${total.toFixed(2)}</td>
-            </tr>
-        </tfoot>
-        </table>
-        
-        
-        <h1>Order completed.  Will be shipped soon...</h1>
-        <h1>Your order reference number is: ${orderId}</h1>
-        <h1>Shipping to customer: ${customerId} Name: ${customerName}</h1>
-                                            
-
-        <h2><a href="listprod">Back to Main Page</a></h2>   
-        `
-    );
-
-};
-/* End of utilities */
-
-
 router.get('/', checkAuthentication, function(req, res, next) {
-    writeHeader(res, `DBs and Dragons Grocery Order List`, `order`);
 
     // If the request has the product list, store it.
     let productList = false;
@@ -91,18 +42,29 @@ router.get('/', checkAuthentication, function(req, res, next) {
     //req.query - get request data
 
     let pool;
+    let realProductList;
+    let custData;
+    let orderId;
+    let totalPrice;
+    let errorHappened = false;
     (async function() {
         try {
 
             pool = await sql.connect(dbConfig);
             // Our customer ID is not a number (Validate custId is a number and is sent)
             if (customerId == false || !Number.isInteger(customerId)) { 
-                res.write(`<h1> Invalid Customer Id </h1>`);
-                res.end();
+                res.render('error', {
+                    title: 'DBs and Dragons Grocery Order List',
+                    errorMessage: 'Invalid Customer Id',
+                });
+                errorHappened = true;
                 return;
             }else if(productList === false){ // If the cart is empty
-                res.write('<h1>Empty Cart</h1>');
-                res.end();
+                res.render('error', {
+                    title: 'DBs and Dragons Grocery Order List',
+                    errorMessage: 'Empty Cart',
+                });
+                errorHappened = true;
                 return;
             }
 
@@ -124,7 +86,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
             psCust.input('param', sql.Int);
             await psCust.prepare(custIDQuery);
             let custResults = await psCust.execute({param: customerId});
-            let custData = custResults.recordset;
+            custData = custResults.recordset;
 
             // The customer ID does not match a real ID: should never be reached since we validate earlier
             if(custData.length === 0 || custData[0].customerId !== customerId){ // !== to Check for type and value equality
@@ -181,7 +143,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                         TA: totalPrice
                     }
                 );
-                let orderId = summaryResults.recordset[0].orderId;
+                orderId = summaryResults.recordset[0].orderId;
 
                 // Traverse product list, store them in orderProduct
                 let productSQL = 
@@ -206,7 +168,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 }
 
                 // All of our SQL statements have been executed, now we can start writing to our page
-                writeOrders(res,realProductList,custData,orderId, totalPrice);
+                //writeOrders(res,realProductList,custData,orderId, totalPrice);
 
                 // Clear product list
                 req.session.productList = [];
@@ -217,9 +179,27 @@ router.get('/', checkAuthentication, function(req, res, next) {
         }
         finally {
             pool.close();
-            res.end();
         }
-    })();
+    })().then(() => {
+        if(errorHappened) return;
+
+        res.render('order', {
+            title: 'DBs and Dragons Grocery Order List',
+            productList: realProductList,
+            custData: custData[0],
+            orderId: orderId,
+            totalPrice: totalPrice,
+            pageActive: {'order': true},
+            helpers: {
+                formatPrice,
+                formatMultiplicationPrice
+            }
+        });
+    }).catch((err) => {
+        console.dir(err);
+        res.write(err);
+        res.end();
+    });
 });
 
 module.exports = router;

@@ -1,0 +1,39 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<div>
+	<h1> Your Order Summary </h1>
+
+    <table class="dragon-table" >
+        <thead>
+            <tr> 
+                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+       	{{#each productList as | product |}}
+       		<tr> 
+    			<td>{{id}}</td>
+    			<td>{{name}}</td>
+    			<td>{{quantity}}</td>
+    			<td>{{formatPrice price}}</td>
+    			<td>{{formatMultiplicationPrice this}}</td>
+    		</tr>
+        {{/each}}
+        </tbody>
+    <tfoot>
+        <tr align="right">
+            <th id="total" colspan="4">Total: </th>
+        <td>{{formatPrice totalPrice}}</td>
+        </tr>
+    </tfoot>
+    </table>
+    
+    <h1>Order completed.  Will be shipped soon...</h1>
+    <h1>Your order reference number is: {{orderId}}</h1>
+    <h1>Shipping to customer: {{custData.customerId}} Name: {{custData.firstName}} {{custData.lastName}}</h1>
+                                            
+
+    <h2><a href="listprod">Back to Main Page</a></h2> 
+</div>

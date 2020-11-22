@@ -65,7 +65,8 @@ app.use(express.static("public"));
 // Rendering the main page
 app.get('/', function (req, res) {
   res.render('index', {
-    title: "DBs and Dragons Grocery Main Page"
+    title: "DBs and Dragons Grocery Main Page",
+    pageActive: {'home': true},
   });
 })
 
