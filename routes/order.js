@@ -121,11 +121,12 @@ router.get('/', checkAuthentication, function(req, res, next) {
             // The customer ID does not match a real ID: should never be reached since we validate earlier
             if(custData[0].customerId !== customerId){ // !== to Check for type and value equality
                 res.write('<h1>Customer not in DB</h1>');
-            }
+            } 
             else{
+                // Customer ID is validated, we have items in cart, time to insert into DB
                 realProductList = []
                 totalPrice = 0;
-                // Need to calculate total amount first
+                // Need to calculate total amount first, and cull null values
                 for(let product of productList){
                     // there are undefined products in product list we must skip
                     if (!product) {
