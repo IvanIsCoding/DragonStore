@@ -1,0 +1,82 @@
+<title>{{title}}</title>
+
+<script type="text/javascript">
+        
+function updateProduct(id, newqty) {
+    window.location="updatecart?".concat("id=", id, "&qty=", newqty);
+}
+
+function handleKeyDown(event, productId) {
+    let enterKeyCode = 13;
+    let keyCode = event.keyCode;
+    let buttonId = "updateProductButton".concat(productId);
+    if (keyCode === enterKeyCode) {
+        document.getElementById(buttonId).click();
+        event.preventDefault();
+    }
+}
+
+</script>
+
+{{> banner }}
+
+{{#if productList}}
+<div>
+	<h1>Your Shopping Cart</h1>
+	                
+	<form name="cart1">
+	    <table class="dragon-table">
+	        <thead>
+	            <tr>
+	                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th>
+	                <th>Price</th> <th>Subtotal</th> <th> </th> <th> </th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	        {{#each productList as | product |}}
+	        	{{#if product}}
+	            <tr>
+	                <td>{{id}}</td>
+	                <td>{{name}}</td>
+	                <td align="center">
+	                	<input 
+			                type="text" 
+			                name={{formatNewQty id}}
+			                size="3" value={{quantity}}
+			                onkeydown = {{formatKeydown id}}
+			            > 
+	                </td>
+	                <td align="right">{{formatPrice price}}</td>
+	                <td align="right">{{formatMultiplicationPrice this}}</td>
+	                <td align="right" style="padding-left: 5px;"> 
+	                    <a href={{formatRemovecart id}}> Remove Item From Cart </a> 
+	                </td>
+	                <td align="right" style="padding-left: 5px;">
+	                    <button
+			                id = {{formatProductButtonId id}}
+			                type="button" 
+			                onclick={{formatOnClick id}} value="Update Quantity"
+			            >
+            				Update Quantity
+            			</button>
+	                </td>
+            	</tr>
+            	{{/if}}
+	        {{/each}}
+	            <tr> 
+	                <td colspan="6" align="right"> <b>Order Total</b> </td> 
+	                <td align="right">{{calculateTotal productList}}</td>
+	            </tr>
+	        </tbody>
+	    </table>
+	</form1>
+
+	<h2><a href="checkout">Check Out</a></h2>
+	<h2><a href="listprod">Continue Shopping</a></h2>
+</div>
+{{else}}
+<div>
+	<h1> Your shopping cart is empty! </h1>
+	<h2><a href="listprod">Continue Shopping</a></h2>
+</div>
+{{/if}}
