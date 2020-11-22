@@ -29,3 +29,10 @@
 	* Redirects to `checkout` with an error if password is invalid
 * `order.js` now checks for session variable to see if authentication happend
 * `order.js` now retrieves the customerId from session variable instead of value in GET request
+
+# +2 marks - for a page header with links to product page, list order, and shopping cart
+
+* Serve static CSS files in `server.js`
+* Add `public/css/style.css` with styling for banner
+* Add banner image
+* Add function to render header in `shared_functions/header.js`
