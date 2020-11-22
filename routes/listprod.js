@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const writeHeader = require('../shared_functions/header');
+
+/* Start of Handlebars helpers */
+const formatPrice = (price) => {
+    return `\$${Number(price).toFixed(2)}`
+};
+
+const formatAddToCartURL = (result) => {
+    const spaceCode = '%20';
+    let productName = result.productName.split(" ").join(spaceCode);
+    return `addcart?id=${result.productId}&name=${productName}&price=${result.productPrice}`;
+};
+/* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
-
-    writeHeader(res, `DBs and Dragons Product List`, `listprod`);
 
     let productName = req.query.productName;
     if(productName === undefined) { // handle case equivalent to empty case
@@ -16,70 +25,9 @@ router.get('/', function(req, res, next) {
         categoryName = 'All';
     }
 
-    /* Start of utilities to write product list */
-
-    let createSingleOption = (category) => {
-        return `<option>${category}</option>`
-    };
-
-    let createOptions = (categoryList) => {
-        return categoryList.map(createSingleOption).join('\n');
-    };
-
-    let createForm = (categoryList) => {
-        return `
-            <h1> Search products: </h1>
-            <form method="get" action="listprod">
-            
-                <select size="1" name="categoryName">
-                    ${createOptions(categoryList)}      
-                </select>
-
-                <input type="text" name="productName" size="40">
-                <input type="submit" value="Search"> <input type="reset" value="Clear">
-            </form>
-
-        `;
-    };
-
-    let createProductRow = (product) => {
-        let result = product.result;
-        return `
-        <tr>
-            <td> <a href="addcart?id=${result.productId}&name=${result.productName}&price=${result.productPrice}"> Add to Cart </a> </td> 
-            <td>${result.productName}</td>
-            <td>${result.categoryName}</td>
-            <td>\$${result.productPrice.toFixed(2)}</td>
-        </tr>
-        `;
-    };
-
-    let createRows = (productList) => {
-        return productList.map(createProductRow).join('\n');
-    };
-
-    let writeProducts = (res, productList, categoryList) => {
-        res.write(
-            `
-            ${createForm(categoryList)}
-
-            <h2>All Products</h2>
-            <table class="dragon-table" >
-                <thead>
-                    <tr>
-                        <th> </th> <th>Product Name</th> <th> Category </th> <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${createRows(productList)}
-                </tbody>
-            </table>
-            `
-        );
-    };
-    /* End of utilities to write product list */
-
     let pool;
+    let productList;
+    let categoryList;
     (async function() {
         try {
             pool = await sql.connect(dbConfig);
@@ -109,29 +57,40 @@ router.get('/', function(req, res, next) {
             await ps.prepare(sqlQuery);
 
             let results = await ps.execute({prodParam: productName, catParam: categoryName});
-            let productList = [];
+            productList = [];
 
             for (let result of results.recordset) {
                 productList.push({'result': result});
             };
 
-            let categoryList = ["All"];
+            categoryList = ["All"];
             let categoryResults = await pool.request().query(categoryQuery);
             for (let categoryResult of categoryResults.recordset) {
                 categoryList.push(categoryResult.categoryName);
             }
 
-            writeProducts(res, productList, categoryList);
-
         } catch(err) {
             console.dir(err);
-            res.write(err)
+            res.write(err);
         }
         finally {
             pool.close();
-            res.end();
         }
-    })();
+    })().then(() => {
+        res.render('listprod', {
+            title: 'DBs and Dragons Product List',
+            productList: productList,
+            categoryList: categoryList,
+            helpers: {
+                formatPrice,
+                formatAddToCartURL
+            }
+        });
+    }).catch(() => {
+        console.dir(err);
+        res.write(err);
+        res.end();
+    });;
 
 });
 

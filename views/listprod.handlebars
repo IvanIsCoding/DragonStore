@@ -1,0 +1,47 @@
+<title>{{title}}</title>
+
+<link rel="stylesheet" href="css/style.css">
+<div id="navbar">
+    <img src="images/banner.png" alt="DBs & Dragons">
+    <a href="/">Home</a>
+    <a href="showcart">Cart</a>
+    <a href="listprod" class="active">Products</a>
+    <a href="listorder">Orders</a>
+</div>
+
+<div>
+    <h1> Search products: </h1>
+            <form method="get" action="listprod">
+            
+                <select size="1" name="categoryName">
+                {{#each categoryList as | category |}}
+                    <option>{{category}}</option>
+                {{/each}}  
+                </select>
+
+                <input type="text" name="productName" size="40">
+                <input type="submit" value="Search"> <input type="reset" value="Clear">
+        </form>
+    
+    <h2>All Products</h2>
+</div>
+
+<table class="dragon-table">
+    <thead>
+        <tr>
+            <th> </th> <th>Product Name</th> <th> Category </th> <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#each productList as | product |}}
+    	<tr>
+    		<td>
+    			<a href={{formatAddToCartURL result}}> Add to Cart </a>
+    		</td>  
+    		<td>{{result.productName}}</td> 
+            <td>{{result.categoryName}}</td>
+    		<td>{{formatPrice result.productPrice}}</td>
+    	</tr>
+    {{/each}}
+    </tbody>
+</table>
