@@ -135,8 +135,8 @@ router.get('/', checkAuthentication, function(req, res, next) {
                     totalPrice += product.quantity*product.price;
                     realProductList.push(product)
                 }
-                // Insert the order detail into productSummary table
-                // and retrieved auto-generated id for order                
+                // Insert the order detail into productSummary table //
+                // and retrieved auto-generated id for order         //       
                 let orderSummarySQL = 
                 `
                 INSERT INTO orderSummary
@@ -144,10 +144,8 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 VALUES (@OD, @TA, @SA, @SCI, @SS, @SP, @SCO, @CI); 
 
                 SELECT SCOPE_IDENTITY() AS orderId;
-
                 `;
-                //SELECT SCOPE_IDENTITY() AS orderId;
-                
+                // Create prepared statement     
                 const psSummary = new sql.PreparedStatement(pool);
                 psSummary.input('OD', sql.Date);
                 psSummary.input('TA', sql.Decimal);
@@ -159,21 +157,21 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 psSummary.input('CI', sql.Int);
                 
                 await psSummary.prepare(orderSummarySQL);
-                
+                // Execute prepared statement, get the data
                 let summaryResults = await psSummary.execute({OD: new Date(), SA: custData[0].address, SCI: custData[0].city, SS: custData[0].state, SP: custData[0].postalCode, SCO: custData[0].country, CI: custData[0].customerId, TA: totalPrice});
                 let orderId = summaryResults.recordset[0].orderId;
-                console.log(orderId)
 
+                // With our generated order ID, insert into the orderProduct table
                 let productSQL = 
                 `
                 INSERT INTO orderProduct(orderId,productId,quantity,price)
                 VALUES(@oid,@pid,@qty,@pr)
                 `;
-
+                // Create prepared statement
                 const psProduct = new sql.PreparedStatement(pool);
                 
                 for(let product of realProductList)
-                    console.log(product)
+                // Pick new vals for prepared statement for every real product
                     psProduct.input("oid", sql.Int);
                     psProduct.input("pid", sql.Int);
                     psProduct.input("qty", sql.Int);
