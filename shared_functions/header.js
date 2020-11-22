@@ -30,7 +30,9 @@ const writeHeader = (res, title, currentPage, setHeader=true) => {
     }
 
     res.write(
-        `<title>${title}</title>
+        `
+        <!DOCTYPE html>
+        <title>${title}</title>
         <link rel="stylesheet" href="css/style.css">
         <div id="navbar">
             <img src="images/banner.png" alt="DBs & Dragons">

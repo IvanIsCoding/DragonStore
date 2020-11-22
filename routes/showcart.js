@@ -42,11 +42,13 @@ router.get('/', function(req, res, next) {
 
     let createUpdateButton = (product) => {
         return `
-            <input
+            <button
                 id = "updateProductButton${product.id}"
                 type="button" 
                 onclick="updateProduct(${product.id}, document.cart1.newqty${product.id}.value)" value="Update Quantity"
             >
+            Update Quantity
+            </button>
         `;
     };
 
@@ -93,16 +95,20 @@ router.get('/', function(req, res, next) {
                 `<h1>Your Shopping Cart</h1>
                 
                 <form name="cart1">
-                    <table>
-                        <tr>
-                            <th>Product Id</th> <th>Product Name</th> <th>Quantity</th>
-                            <th>Price</th> <th>Subtotal</th> <th> </th> <th> </th>
-                        </tr>
-                        ${createProductEntries(productList)}
-                        <tr> 
-                            <td colspan="5" align="right"> <b>Order Total</b> </td> 
-                            <td align="right">\$${calculateTotal(productList).toFixed(2)}</td>
-                        </tr>
+                    <table class="dragon-table">
+                        <thead>
+                            <tr>
+                                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th>
+                                <th>Price</th> <th>Subtotal</th> <th> </th> <th> </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${createProductEntries(productList)}
+                            <tr> 
+                                <td colspan="6" align="right"> <b>Order Total</b> </td> 
+                                <td align="right">\$${calculateTotal(productList).toFixed(2)}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </form1>
 

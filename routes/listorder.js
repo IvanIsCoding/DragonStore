@@ -25,9 +25,13 @@ router.get('/', function(req, res, next) {
         return `
         <tr align="right">
             <td colspan="5">
-                <table border="1">
-                    <th>Product Id</th> <th>Quantity</th> <th>Price</th>
-                    ${createProducts(subResults)}
+                <table class="dragon-table noround">
+                    <thead>
+                        <th>Product Id</th> <th>Quantity</th> <th>Price</th>
+                    </thead>
+                    <tbody>
+                        ${createProducts(subResults)}
+                    </tbody>
                 </table>
             </td>
         </tr>
@@ -65,11 +69,15 @@ router.get('/', function(req, res, next) {
     let writeTable = (res, orderListData) => {
         res.write(
             `
-            <table border=1 align="center">
-                <tr> 
-                    <th>Order Id</th> <th>Order Date</th> <th>Customer Id</th> <th>Customer Name</th> <th>Total Amount</th> 
-                </tr>
-                ${createRows(orderListData)}
+            <table class="dragon-table" align="center">
+                <thead>
+                    <tr> 
+                        <th>Order Id</th> <th>Order Date</th> <th>Customer Id</th> <th>Customer Name</th> <th>Total Amount</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    ${createRows(orderListData)}
+                </tbody>
             </table>
             `
         );

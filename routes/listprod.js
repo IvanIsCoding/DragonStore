@@ -64,11 +64,15 @@ router.get('/', function(req, res, next) {
             ${createForm(categoryList)}
 
             <h2>All Products</h2>
-            <table>
-                <tr>
-                    <th> </th> <th>Product Name</th> <th> Category </th> <th>Price</th>
-                </tr>
-                ${createRows(productList)}
+            <table class="dragon-table" >
+                <thead>
+                    <tr>
+                        <th> </th> <th>Product Name</th> <th> Category </th> <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${createRows(productList)}
+                </tbody>
             </table>
             `
         );
