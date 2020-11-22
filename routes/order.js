@@ -41,15 +41,19 @@ const writeOrders = (res, productList, customerData, orderId, total) => {
     res.write(
         `
         <h1> Your Order Summary </h1>
-        <table>
-            <tr> 
-                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
-            </tr>
-            ${createProductRows(productList)}
+        <table class="dragon-table" >
+            <thead>
+                <tr> 
+                    <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${createProductRows(productList)}
+            </tbody>
         <tfoot>
             <tr align="right">
                 <th id="total" colspan="3">Total: </th>
-            <td>${total.toFixed(2)}</td>
+            <td>\$${total.toFixed(2)}</td>
             </tr>
         </tfoot>
         </table>
