@@ -86,10 +86,11 @@ router.get('/', checkAuthentication, function(req, res, next) {
     //req.session has session variables
     //req.query - get request data
 
+    let pool;
     (async function() {
         try {
 
-            let pool = await sql.connect(dbConfig);
+            pool = await sql.connect(dbConfig);
             // Our customer ID is not a number (Validate custId is a number and is sent)
             if (customerId == false || !Number.isInteger(customerId)) { 
                 res.write(`<h1> Invalid Customer Id </h1>`);
@@ -177,7 +178,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 psProduct.input("pr", sql.Decimal);
                 await psProduct.prepare(productSQL);
                 // Loop through all non null products
-                for(let product of realProductList)
+                for(let product of realProductList) 
                     // Pick new vals for prepared statement for every real product
                     // Store product results just to make me feel better
                     await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
@@ -197,6 +198,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
             req.session.authentication = null;
             req.session.invalidPassword = true;
             */
+            pool.close();
             res.end();
         }
     })();
