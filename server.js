@@ -1,6 +1,6 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
-const session = require('express-session')
+const session = require('express-session');
 const bodyParser  = require('body-parser');
 
 let index = require('./routes/index');
@@ -19,6 +19,10 @@ let product = require('./routes/product');
 let displayImage = require('./routes/displayImage');
 let customer = require('./routes/customer');
 let ship = require('./routes/ship');
+
+let updateCart = require('./routes/updatecart');
+let removeCart = require('./routes/removecart');
+let customerAuthentication = require('./routes/customerauthentication');
 
 const app = express();
 
@@ -56,10 +60,6 @@ app.use(session({
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
-// Setting up where static assets should
-// be served from.
-app.use(express.static('public'));
-
 // Setting up Express.js routes.
 // These present a "route" on the URL of the site.
 // Eg: http://127.0.0.1/loaddata
@@ -80,5 +80,12 @@ app.use('/displayImage', displayImage);
 app.use('/customer', customer);
 app.use('/ship', ship);
 
-// Starting our Express app
+app.use('/updatecart', updateCart);
+app.use('/removecart', removeCart);
+app.use('/customerauthentication', customerAuthentication);
+
+// Setting up where static assets should
+// be served from.
+app.use(express.static("public"));
+
 app.listen(3000)
