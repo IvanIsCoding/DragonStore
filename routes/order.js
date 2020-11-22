@@ -15,32 +15,49 @@ function checkAuthentication(req, res, next) {
 }
 
 /* Start of utilities */
-
-const createProductRows = (productList) => {
-    return ``;
+const createProductRow = (product) =>{
+    return `
+    <tr> 
+    <td>${product.id}</td>
+    <td>${product.name}</td>
+    <td>${product.quantity}</td>
+    <td>\$${product.price}</td>
+    <td>${product.price*product.quantity}</td>
+    </tr>
+    `
 };
 
-const writeOrders = (res, productList) => {
+const createProductRows = (productList) => {
+    return productList.map(createProductRow).join('\n');
+};
 
-    let orderId = 1157;
-    let customerId = 1;
-    let customerName = 'Elias Pinno';
+const writeOrders = (res, productList, customerData, orderId, total) => {
+    let customerId = customerData[0].customerId;
+    let customerName = customerData[0].firstName + ' ' + customerData[0].lastName;
 
     res.write(
         `
+        <h1> Your Order Summary </h1>
         <table>
             <tr> 
                 <th>Product Id</th> <th>Product Name</th> <th>Quantity</th> <th>Price</th> <th>Subtotal</th>
             </tr>
             ${createProductRows(productList)}
+        <tfoot>
+            <tr align="right">
+                <th id="total" colspan="3">Total: </th>
+            <td>${total}</td>
+            </tr>
+        </tfoot>
         </table>
+        
         
         <h1>Order completed.  Will be shipped soon...</h1>
         <h1>Your order reference number is: ${orderId}</h1>
         <h1>Shipping to customer: ${customerId} Name: ${customerName}</h1>
                                             
 
-        <h2><a href="">Back to Main Page</a></h2>
+        <h2><a href="">Back to Main Page</a></h2>   
         `
     );
 
@@ -61,7 +78,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
     // If the request has the customer id, store it.
     let customerId = false;
     if (req.session.authentication && req.session.authentication.customerId) {
-        customerId = req.session.authentication.customerId;
+        customerId = Number(req.session.authentication.customerId);
     }
     
     //req.session has session variables
@@ -69,45 +86,111 @@ router.get('/', checkAuthentication, function(req, res, next) {
 
     (async function() {
         try {
+
             let pool = await sql.connect(dbConfig);
+            // Our customer ID is not a number (Validate custId is a number and is sent)
+            if (customerId == false || !Number.isInteger(customerId)) { 
+                res.write(`<h1> Invalid Customer Id </h1>`);
+                res.end();
+                return;
+            }else if(productList === false){ // If the cart is empty
+                res.write('<h1>Empty Cart</h1>');
+                res.end();
+                return;
+            }
+            // Ensure customer ID is in the database
             let custIDQuery = `
                 SELECT 
-                customerId,
-                firstName,
-                lastName
+                    customerId,
+                    firstName,
+                    lastName,
+                    address,
+                    city,
+                    state,
+                    postalCode,
+                    country
                 FROM customer
                 WHERE customerId = @param
             `;
+            const psCust = new sql.PreparedStatement(pool);
+            psCust.input('param', sql.Int);
+            await psCust.prepare(custIDQuery);
+            let custResults = await psCust.execute({param: customerId});
+            let custData = custResults.recordset;
 
-            const ps = new sql.PreparedStatement(pool);
-            ps.input('param', sql.Int);
-            await ps.prepare(custIDQuery);
-
-            let custResults = await ps.execute({param: customerId});
-            let custData = custResults.recordset
-
-            if(custData.customerId != customerId){
-                res.write('<h1>Invaild Customer ID</h1>')
+            // The customer ID does not match a real ID: should never be reached since we validate earlier
+            if(custData[0].customerId !== customerId){ // !== to Check for type and value equality
+                res.write('<h1>Customer not in DB</h1>');
             }
             else{
-                
-            }
+                realProductList = []
+                totalPrice = 0;
+                // Need to calculate total amount first
+                for(let product of productList){
+                    // there are undefined products in product list we must skip
+                    if (!product) {
+                        continue;
+                    }
+                    totalPrice += product.quantity*product.price;
+                    realProductList.push(product)
+                }
+                // Insert the order detail into productSummary table
+                // and retrieved auto-generated id for order                
+                let orderSummarySQL = 
+                `
+                INSERT INTO orderSummary
+                (orderDate, totalAmount, shiptoAddress, shiptoCity, shiptoState, shiptoPostalCode,shiptoCountry, customerId) 
+                VALUES (@OD, @TA, @SA, @SCI, @SS, @SP, @SCO, @CI); 
 
-                
+                SELECT SCOPE_IDENTITY() AS orderId;
 
-            
-            
+                `;
+                //SELECT SCOPE_IDENTITY() AS orderId;
+                
+                const psSummary = new sql.PreparedStatement(pool);
+                psSummary.input('OD', sql.Date);
+                psSummary.input('TA', sql.Decimal);
+                psSummary.input('SA', sql.VarChar);
+                psSummary.input('SCI', sql.VarChar);
+                psSummary.input('SS', sql.VarChar);
+                psSummary.input('SP', sql.VarChar);
+                psSummary.input('SCO', sql.VarChar);
+                psSummary.input('CI', sql.Int);
+                
+                await psSummary.prepare(orderSummarySQL);
+                
+                let summaryResults = await psSummary.execute({OD: new Date(), SA: custData[0].address, SCI: custData[0].city, SS: custData[0].state, SP: custData[0].postalCode, SCO: custData[0].country, CI: custData[0].customerId, TA: totalPrice});
+                let orderId = summaryResults.recordset[0].orderId;
+                console.log(orderId)
+
+                let productSQL = 
+                `
+                INSERT INTO orderProduct(orderId,productId,quantity,price)
+                VALUES(@oid,@pid,@qty,@pr)
+                `;
+
+                const psProduct = new sql.PreparedStatement(pool);
+                
+                for(let product of realProductList)
+                    console.log(product)
+                    psProduct.input("oid", sql.Int);
+                    psProduct.input("pid", sql.Int);
+                    psProduct.input("qty", sql.Int);
+                    psProduct.input("pr", sql.Decimal);
+                    await psProduct.prepare(productSQL);
+                    let productResults = await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
+
+                writeOrders(res,realProductList,custData,orderId, totalPrice);
+            }  
             //orderListData.push({'result': result, 'subResults': subResults.recordset});
-
-
-
-            writeOrders(res, productList);
 
         } catch(err) {
             console.dir(err);
             res.write(err)
         }
         finally {
+            // Clear session variables
+            req.session = null;
             res.end();
         }
     })();
@@ -153,7 +236,6 @@ router.get('/', checkAuthentication, function(req, res, next) {
 
     /** Clear session/cart **/
 
-    res.end();
 });
 
 module.exports = router;
