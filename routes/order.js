@@ -171,14 +171,14 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 `;
                 // Create prepared statement
                 const psProduct = new sql.PreparedStatement(pool);
+                psProduct.input("oid", sql.Int);
+                psProduct.input("pid", sql.Int);
+                psProduct.input("qty", sql.Int);
+                psProduct.input("pr", sql.Decimal);
+                await psProduct.prepare(productSQL);
                 // Loop through all non null products
                 for(let product of realProductList)
                     // Pick new vals for prepared statement for every real product
-                    psProduct.input("oid", sql.Int);
-                    psProduct.input("pid", sql.Int);
-                    psProduct.input("qty", sql.Int);
-                    psProduct.input("pr", sql.Decimal);
-                    await psProduct.prepare(productSQL);
                     // Store product results just to make me feel better
                     let productResults = await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
                 // All of our SQL statements have been executed, now we can start writing to our page
@@ -192,7 +192,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
         }
         finally {
             // Clear session variables
-            req.session = null;
+            //req.session = null;
             res.end();
         }
     })();
