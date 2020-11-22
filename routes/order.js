@@ -3,11 +3,12 @@ const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
 
+// Authenticates that you have previously inputted a valid password by the time you have arrived here
 function checkAuthentication(req, res, next) {
     if (req.session.authentication && req.session.authentication.authenticated) {
         next();
     }
-    else {
+    else { // Your password is invalid, send you back to checkout
         req.session.invalidPassword = true;
         res.redirect("/checkout");
     }
@@ -15,17 +16,28 @@ function checkAuthentication(req, res, next) {
 
 router.get('/', checkAuthentication, function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
-    res.write("<title>YOUR NAME Grocery Order Processing</title>");
+    res.write("<title>DBs and Dragons Grocery Order List</title>");
 
+    // If the request has the product list, store it.
     let productList = false;
     if (req.session.productList && req.session.productList.length > 0) {
         productList = req.session.productList;
     }
 
+    // If the request has the customer id, store it.
     let customerId = false;
     if (req.session.authentication && req.session.authentication.customerId) {
         customerId = req.session.authentication.customerId;
     }
+
+    
+    //req.session has session variables
+    //req.query - get request data
+
+    (async function() {
+        let pool = await sql.connect(dbConfig)
+        res.write('<h1>DBs and Dragons Grocery Order List</h1>');
+    })();
 
     /**
     Determine if valid customer id was entered
