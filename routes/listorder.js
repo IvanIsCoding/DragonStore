@@ -87,7 +87,7 @@ router.get('/', function(req, res, next) {
                     orderDate,
                     customer.customerId,
                     CONCAT(customer.firstName, ' ', customer.lastName) AS customerName,
-                    COALESCE(SUM(price), 0) AS total
+                    COALESCE(SUM(price*quantity), 0) AS total
                 FROM ordersummary
                 INNER JOIN customer
                 ON ordersummary.customerId = customer.customerId
