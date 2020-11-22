@@ -180,7 +180,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 for(let product of realProductList)
                     // Pick new vals for prepared statement for every real product
                     // Store product results just to make me feel better
-                    let productResults = await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
+                    await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
                 // All of our SQL statements have been executed, now we can start writing to our page
                 writeOrders(res,realProductList,custData,orderId, totalPrice);
             }  
