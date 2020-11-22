@@ -59,6 +59,9 @@ app.use('/checkout', checkout);
 app.use('/customerauthentication', customerAuthentication);
 app.use('/order', order);
 
+// Serving css
+app.use(express.static("public"));
+
 // Rendering the main page
 app.get('/', function (req, res) {
   res.render('index', {
