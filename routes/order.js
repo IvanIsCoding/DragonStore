@@ -34,12 +34,13 @@ const writeOrders = (res, productList) => {
             </tr>
             ${createProductRows(productList)}
         </table>
+        
         <h1>Order completed.  Will be shipped soon...</h1>
         <h1>Your order reference number is: ${orderId}</h1>
         <h1>Shipping to customer: ${customerId} Name: ${customerName}</h1>
                                             
 
-        <h2><a href="shop.html">Back to Main Page</a></h2>
+        <h2><a href="">Back to Main Page</a></h2>
         `
     );
 
@@ -69,28 +70,38 @@ router.get('/', checkAuthentication, function(req, res, next) {
     (async function() {
         try {
             let pool = await sql.connect(dbConfig);
-            let sqlQuery = `
+            let custIDQuery = `
                 SELECT 
                 customerId,
                 firstName,
-                
+                lastName
                 FROM customer
+                WHERE customerId = @param
             `;
 
+            const ps = new sql.PreparedStatement(pool);
+            ps.input('param', sql.Int);
+            await ps.prepare(custIDQuery);
 
-            for (let result of results.recordset) {
+            let custResults = await ps.execute({param: customerId});
+            let custData = custResults.recordset
 
-                const ps = new sql.PreparedStatement(pool);
-                ps.input('param', sql.Int);
-                await ps.prepare(subQuery);
+            if(custData.customerId != customerId){
+                res.write('<h1>Invaild Customer ID</h1>')
+            }
+            else{
+                
+            }
 
-                let subResults = await ps.execute({param: result.orderId});
+                
 
-                orderListData.push({'result': result, 'subResults': subResults.recordset});
+            
+            
+            //orderListData.push({'result': result, 'subResults': subResults.recordset});
 
-            };
 
-            writeOrders(res, orderListData);
+
+            writeOrders(res, productList);
 
         } catch(err) {
             console.dir(err);
