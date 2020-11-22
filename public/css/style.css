@@ -83,6 +83,16 @@
     text-decoration: none;
 }
 
+.dragon-table tbody tr button {
+    background: #009879;
+    border-color: white;
+    border-style: solid;
+    border-width: 2px;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+}
+
 .dragon-table tbody tr:nth-of-type(even) {
     background-color: #f3f3f3;
 }
