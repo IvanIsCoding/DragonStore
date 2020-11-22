@@ -81,6 +81,7 @@ router.get('/', function(req, res, next) {
             title: 'DBs and Dragons Product List',
             productList: productList,
             categoryList: categoryList,
+            pageActive: {'listprod': true},
             helpers: {
                 formatPrice,
                 formatAddToCartURL
