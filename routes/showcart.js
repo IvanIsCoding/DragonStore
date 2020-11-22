@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const writeHeader = require('../shared_functions/header');
 
 router.get('/', function(req, res, next) {
     
-    res.setHeader('Content-Type', 'text/html');
-    res.write("<title>Your Shopping Cart</title>");
+    writeHeader(res, `Your Shopping Cart`, `showcart`);
     
     res.write(
         `

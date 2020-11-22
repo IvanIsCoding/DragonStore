@@ -1,34 +1,54 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
+const writeHeader = require('../shared_functions/header');
 
 router.get('/', function(req, res, next) {
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.write("<title>DBs and Dragons Product List</title>")
-    res.write(
-        `
-        <h1> Search products: </h1>
-        <form method="get" action="listprod">
-            <input type="text" name="productName" size="40">
-            <input type="submit" value="Search"> <input type="reset" value="Clear">
-        </form>
-        `
-    );
 
+    writeHeader(res, `DBs and Dragons Product List`, `listprod`);
 
-    let name = req.query.productName;
-    if(name === undefined) { // handle case equivalent to empty case
-        name = '';
+    let productName = req.query.productName;
+    if(productName === undefined) { // handle case equivalent to empty case
+        productName = '';
+    }
+    let categoryName = req.query.categoryName;
+    if (categoryName === undefined || categoryName === '') {
+        categoryName = 'All';
     }
 
     /* Start of utilities to write product list */
+
+    let createSingleOption = (category) => {
+        return `<option>${category}</option>`
+    };
+
+    let createOptions = (categoryList) => {
+        return categoryList.map(createSingleOption).join('\n');
+    };
+
+    let createForm = (categoryList) => {
+        return `
+            <h1> Search products: </h1>
+            <form method="get" action="listprod">
+            
+                <select size="1" name="categoryName">
+                    ${createOptions(categoryList)}      
+                </select>
+
+                <input type="text" name="productName" size="40">
+                <input type="submit" value="Search"> <input type="reset" value="Clear">
+            </form>
+
+        `;
+    };
+
     let createProductRow = (product) => {
         let result = product.result;
         return `
         <tr>
             <td> <a href="addcart?id=${result.productId}&name=${result.productName}&price=${result.productPrice}"> Add to Cart </a> </td> 
-            <td>${result.productName}</td> 
+            <td>${result.productName}</td>
+            <td>${result.categoryName}</td>
             <td>\$${result.productPrice.toFixed(2)}</td>
         </tr>
         `;
@@ -38,13 +58,15 @@ router.get('/', function(req, res, next) {
         return productList.map(createProductRow).join('\n');
     };
 
-    let writeProducts = (res, productList) => {
+    let writeProducts = (res, productList, categoryList) => {
         res.write(
             `
+            ${createForm(categoryList)}
+
             <h2>All Products</h2>
             <table>
                 <tr>
-                    <th> </th> <th>Product Name</th> <th>Price</th>
+                    <th> </th> <th>Product Name</th> <th> Category </th> <th>Price</th>
                 </tr>
                 ${createRows(productList)}
             </table>
@@ -61,23 +83,40 @@ router.get('/', function(req, res, next) {
                 SELECT 
                     productId,
                     productName,
-                    productPrice
+                    productPrice,
+                    categoryName
                 FROM product
-                WHERE productName LIKE CONCAT('%', @param, '%')
+                INNER JOIN category
+                ON product.categoryId = category.categoryId
+                WHERE productName LIKE CONCAT('%', @prodParam, '%')
+                AND (categoryName = @catParam OR @catParam = 'All')
+            `;
+
+            let categoryQuery = `
+                SELECT categoryName
+                FROM category
+                ORDER BY categoryName ASC
             `;
 
             const ps = new sql.PreparedStatement(pool);
-            ps.input('param', sql.VarChar(40));
+            ps.input('prodParam', sql.VarChar(40));
+            ps.input('catParam', sql.VarChar(50));
             await ps.prepare(sqlQuery);
 
-            let results = await ps.execute({param: name});
+            let results = await ps.execute({prodParam: productName, catParam: categoryName});
             let productList = [];
 
             for (let result of results.recordset) {
                 productList.push({'result': result});
             };
 
-            writeProducts(res, productList);
+            let categoryList = ["All"];
+            let categoryResults = await pool.request().query(categoryQuery);
+            for (let categoryResult of categoryResults.recordset) {
+                categoryList.push(categoryResult.categoryName);
+            }
+
+            writeProducts(res, productList, categoryList);
 
         } catch(err) {
             console.dir(err);
