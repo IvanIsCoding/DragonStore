@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
+const writeHeader = require('../shared_functions/header');
 
 // Authenticates that you have previously inputted a valid password by the time you have arrived here
 function checkAuthentication(req, res, next) {
@@ -68,8 +69,7 @@ const writeOrders = (res, productList, customerData, orderId, total) => {
 
 
 router.get('/', checkAuthentication, function(req, res, next) {
-    res.setHeader('Content-Type', 'text/html');
-    res.write("<title>DBs and Dragons Grocery Order List</title>");
+    writeHeader(res, `DBs and Dragons Grocery Order List`, `order`);
 
     // If the request has the product list, store it.
     let productList = false;
