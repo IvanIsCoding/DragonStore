@@ -21,8 +21,8 @@ const createProductRow = (product) =>{
     <td>${product.id}</td>
     <td>${product.name}</td>
     <td>${product.quantity}</td>
-    <td>\$${product.price}</td>
-    <td>\$${product.price*product.quantity}</td>
+    <td>\$${Number(product.price).toFixed(2)}</td>
+    <td>\$${Number(product.price*product.quantity).toFixed(2)}</td>
     </tr>
     `
 };
