@@ -28,13 +28,15 @@ const createProductRow = (product) =>{
 };
 
 const createProductRows = (productList) => {
+    // Create the Product row for every product in product list
+    // Join the returned strings all together, with new line characters in between each
     return productList.map(createProductRow).join('\n');
 };
 
 const writeOrders = (res, productList, customerData, orderId, total) => {
-    let customerId = customerData[0].customerId;
+    let customerId = customerData[0].customerId; // Get the customer data
     let customerName = customerData[0].firstName + ' ' + customerData[0].lastName;
-
+    // Write the SQL, with our functions embedded
     res.write(
         `
         <h1> Your Order Summary </h1>
@@ -135,7 +137,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                     totalPrice += product.quantity*product.price;
                     realProductList.push(product)
                 }
-                // Insert the order detail into productSummary table //
+                // Insert the order detail into orderSummary table //
                 // and retrieved auto-generated id for order         //       
                 let orderSummarySQL = 
                 `
@@ -161,7 +163,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 let summaryResults = await psSummary.execute({OD: new Date(), SA: custData[0].address, SCI: custData[0].city, SS: custData[0].state, SP: custData[0].postalCode, SCO: custData[0].country, CI: custData[0].customerId, TA: totalPrice});
                 let orderId = summaryResults.recordset[0].orderId;
 
-                // With our generated order ID, insert into the orderProduct table
+                // Traverse product list, store them in orderProduct
                 let productSQL = 
                 `
                 INSERT INTO orderProduct(orderId,productId,quantity,price)
@@ -169,16 +171,17 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 `;
                 // Create prepared statement
                 const psProduct = new sql.PreparedStatement(pool);
-                
+                // Loop through all non null products
                 for(let product of realProductList)
-                // Pick new vals for prepared statement for every real product
+                    // Pick new vals for prepared statement for every real product
                     psProduct.input("oid", sql.Int);
                     psProduct.input("pid", sql.Int);
                     psProduct.input("qty", sql.Int);
                     psProduct.input("pr", sql.Decimal);
                     await psProduct.prepare(productSQL);
+                    // Store product results just to make me feel better
                     let productResults = await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
-
+                // All of our SQL statements have been executed, now we can start writing to our page
                 writeOrders(res,realProductList,custData,orderId, totalPrice);
             }  
             //orderListData.push({'result': result, 'subResults': subResults.recordset});
