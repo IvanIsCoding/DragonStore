@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
+const writeHeader = require('../shared_functions/header');
 
 router.get('/', function(req, res, next) {
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.write("<title>DBs and Dragons Product List</title>")
+
+    writeHeader(res, `DBs and Dragons Product List`, `listprod`);
 
     let productName = req.query.productName;
     if(productName === undefined) { // handle case equivalent to empty case

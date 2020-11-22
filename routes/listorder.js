@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
+const writeHeader = require('../shared_functions/header');
 
 router.get('/', function(req, res, next) {
 
-    res.setHeader('Content-Type', 'text/html');
-    res.write('<title>DBs and Dragons Grocery Order List</title>');
+    writeHeader(res, `DBs and Dragons Grocery Order List`, `listorder`);
 
     /* Start of utilities to write orders list */
     let createProductRow = (subResult) => {
@@ -65,7 +65,7 @@ router.get('/', function(req, res, next) {
     let writeTable = (res, orderListData) => {
         res.write(
             `
-            <table border=1>
+            <table border=1 align="center">
                 <tr> 
                     <th>Order Id</th> <th>Order Date</th> <th>Customer Id</th> <th>Customer Name</th> <th>Total Amount</th> 
                 </tr>
