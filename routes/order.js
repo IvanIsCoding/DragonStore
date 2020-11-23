@@ -90,7 +90,11 @@ router.get('/', checkAuthentication, function(req, res, next) {
 
             // The customer ID does not match a real ID: should never be reached since we validate earlier
             if(custData.length === 0 || custData[0].customerId !== customerId){ // !== to Check for type and value equality
-                res.write('<h1>Customer not in DB</h1>');
+                res.render('error', {
+                    title: 'DBs and Dragons Grocery Order List',
+                    errorMessage: 'Invalid Customer Id: Customer not in DB',
+                });
+                errorHappened = true;
             } 
             else{
                 // Customer ID is validated, we have items in cart, time to insert into DB
@@ -120,7 +124,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
 
                 // Create prepared statement     
                 const psSummary = new sql.PreparedStatement(pool);
-                psSummary.input('OD', sql.Date);
+                psSummary.input('OD', sql.DateTime);
                 psSummary.input('TA', sql.Decimal);
                 psSummary.input('SA', sql.VarChar);
                 psSummary.input('SCI', sql.VarChar);
@@ -175,7 +179,8 @@ router.get('/', checkAuthentication, function(req, res, next) {
             }  
         } catch(err) {
             console.dir(err);
-            res.write(err)
+            res.write(err);
+            errorHappened = true;
         }
         finally {
             pool.close();
