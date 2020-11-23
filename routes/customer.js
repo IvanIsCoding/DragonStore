@@ -59,7 +59,6 @@ router.get('/', checkLogin, function(req, res, next) {
         ];
 
     })().then((userData) => {
-        console.log(userData);
         res.render('customer', {
             title: 'DBs and Dragons Customer Page',
             pageActive: {'customer': true},
