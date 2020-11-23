@@ -1,0 +1,19 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<div>
+	<h3>Customer Profile</h3>
+	
+	<table class="dragon-table noround">
+		<tbody class="noround">
+		{{#each userData as | data |}}
+			<tr>
+				<th style="background-color: #009879;color: white;"> {{keyname}}</th> 
+				<td>{{keyval}}</td>
+			</tr>
+		{{/each}}
+		</tbody>
+	</table>
+
+</div>
