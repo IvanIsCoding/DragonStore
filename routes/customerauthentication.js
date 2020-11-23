@@ -45,7 +45,7 @@ router.post('/', function(req, res, next) {
         }
     })().then(() => {
     	if (reqPassword && dbPassword && dbPassword === reqPassword) {
-    		req.session.authentication = {
+    		req.session.customerAuthentication = {
     			'customerId': reqCustomerId,
     			'authenticated': true
     		};

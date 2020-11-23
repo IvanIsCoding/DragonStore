@@ -3,26 +3,72 @@ const router = express.Router();
 const auth = require('../auth');
 const sql = require('mssql');
 
-router.get('/', function(req, res, next) {
+/* Start of Handlebars helpers */
+const formatPrice = (price) => {
+    return `\$${Number(price).toFixed(2)}`
+};
 
-	
-	// TODO: Include files auth.jsp and jdbc.jsp
-	
-	
-	
-    res.setHeader('Content-Type', 'text/html');
+const formatDate = (orderDate) => {
+    let dateFormatOptions = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+    };
+    let formattedDate = orderDate.toLocaleDateString("en-US", dateFormatOptions);
+    return formattedDate;
+};
+/* End of Handlebars helpers */
 
+// Authenticates that user has logged in previously
+function checkLogin(req, res, next) {
+    if (req.session.authenticatedUser) {
+        next();
+    }
+    else { // Your password is invalid, send you back to checkout
+        req.session.loginMessage = "Access denied to the Admin page. Log in with your credentials first.";
+        res.redirect("/login");
+    }
+}
+
+router.get('/', checkLogin, function(req, res, next) {
+	
+    let pool;
     (async function() {
-        try {
-            let pool = await sql.connect(dbConfig);
+        pool = await sql.connect(dbConfig);
 
-	    // TODO: Write SQL query that prints out total order amount by day
-        } catch(err) {
-            console.dir(err);
-            res.write(err + "");
-            res.end();
-        }
-    })();
+        let sqlQuery = `
+            SELECT
+                CAST(orderDate AS DATE) AS groupDate,
+                COALESCE(SUM(totalAmount), 0) AS totalOrderAmount
+            FROM ordersummary
+            GROUP BY CAST(orderDate AS DATE)
+            ORDER BY CAST(orderDate AS DATE) DESC;
+        `;
+
+        let results = await pool.request().query(sqlQuery);
+
+        return results.recordset;
+    })().then((salesData) => {
+        res.render('admin', {
+            title: 'DBs and Dragons Admin Page',
+            salesData: salesData,
+            pageActive: {'order': true},
+            helpers: {
+                formatPrice,
+                formatDate
+            }
+        });
+    }).catch((err) => {
+        console.dir(err);
+        res.render('error', {
+            title: 'DBs and Dragons Admin Page',
+            errorMessage: `Error, contact your admin: ${err}`,
+        });
+    }).finally(() => {
+        pool.close();
+    });
+
 });
 
 module.exports = router;

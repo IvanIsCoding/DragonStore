@@ -15,7 +15,7 @@ const formatMultiplicationPrice = (product) => {
 
 // Authenticates that you have previously inputted a valid password by the time you have arrived here
 function checkAuthentication(req, res, next) {
-    if (req.session.authentication && req.session.authentication.authenticated) {
+    if (req.session.customerAuthentication && req.session.customerAuthentication.authenticated) {
         next();
     }
     else { // Your password is invalid, send you back to checkout
@@ -34,8 +34,8 @@ router.get('/', checkAuthentication, function(req, res, next) {
 
     // If the request has the customer id, store it.
     let customerId = false;
-    if (req.session.authentication && req.session.authentication.customerId) {
-        customerId = Number(req.session.authentication.customerId);
+    if (req.session.customerAuthentication && req.session.customerAuthentication.customerId) {
+        customerId = Number(req.session.customerAuthentication.customerId);
     }
     
     //req.session has session variables

@@ -9,8 +9,10 @@ router.post('/', function(req, res) {
     (async () => {
         let authenticatedUser = await validateLogin(req);
         if (authenticatedUser) {
+            req.session.authenticatedUser = authenticatedUser;
             res.redirect("/");
         } else {
+            req.session.loginMessage = "Access denied. At least one of the username or password is incorrect.";
             res.redirect("/login");
         }
      })();
@@ -26,11 +28,30 @@ async function validateLogin(req) {
     let authenticatedUser =  await (async function() {
         try {
             let pool = await sql.connect(dbConfig);
+            let dbPassword = false;
 
-	// TODO: Check if userId and password match some customer account. 
-	// If so, set authenticatedUser to be the username.
+            let sqlQuery = `
+                SELECT 
+                    password
+                FROM customer
+                WHERE userid = @param;
+            `;
 
-           return false;
+            const ps = new sql.PreparedStatement(pool);
+            ps.input('param', sql.VarChar(20));
+            await ps.prepare(sqlQuery);
+
+            let results = await ps.execute({param: username});
+            if(results.recordset.length > 0) { // userid exists in database
+                let result = results.recordset[0];
+                dbPassword = result.password;
+            }
+
+            if(dbPassword && password && dbPassword === password) {
+                return username;
+            } else{
+                return false;
+            }
         } catch(err) {
             console.dir(err);
             return false;

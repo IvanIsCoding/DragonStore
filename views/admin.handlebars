@@ -1,0 +1,23 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<div>
+	<h3>Administrator Sales Report by Day</h3>
+
+	<table class="dragon-table">
+		<thead>
+			<tr>
+				<th>Order Date</th> <th>Total Order Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each salesData as | data |}}
+				<tr>
+					<td>{{formatDate groupDate}}</td> <td>{{formatPrice totalOrderAmount}}</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+
+</div>
