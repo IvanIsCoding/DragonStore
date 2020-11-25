@@ -31,7 +31,9 @@
     		<td>
     			<a href={{formatAddToCartURL result}}> Add to Cart </a>
     		</td>  
-    		<td>{{result.productName}}</td> 
+    		<td>
+                <a class="dragon-prodname" href={{formatProductPageURL result.productId}}> <b> {{result.productName}} </b> </a>
+            </td> 
             <td>{{result.categoryName}}</td>
     		<td>{{formatPrice result.productPrice}}</td>
     	</tr>

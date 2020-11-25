@@ -113,3 +113,13 @@
     color: #009879;
     font-weight: bold;
 }
+
+.dragon-prodname {
+    background: none !important;
+    border-color: none !important;
+    border-style: 0px !important;
+    border-width: 0px !important;
+    color: black !important;
+    padding: 0px !important;
+    text-decoration: none !important;
+}

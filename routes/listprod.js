@@ -12,6 +12,11 @@ const formatAddToCartURL = (result) => {
     let productName = result.productName.split(" ").join(spaceCode);
     return `addcart?id=${result.productId}&name=${productName}&price=${result.productPrice}`;
 };
+
+const formatProductPageURL = (productId) => {
+    return `product?id=${productId}`;
+};
+
 /* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
@@ -67,7 +72,6 @@ router.get('/', function(req, res, next) {
             categoryList.push(categoryResult.categoryName);
         }
 
-        console.log([productList, categoryList]);
         return [productList, categoryList];
 
     })().then(([productList, categoryList]) => {
@@ -78,7 +82,8 @@ router.get('/', function(req, res, next) {
             pageActive: {'listprod': true},
             helpers: {
                 formatPrice,
-                formatAddToCartURL
+                formatAddToCartURL,
+                formatProductPageURL
             }
         });
     }).catch((err) => {
