@@ -1,0 +1,38 @@
+{{! 
+	TODO: This page has not yet been tested
+}}
+
+<title>{{title}}</title>
+
+{{> banner }}
+
+<div>
+	<h2>{{product.productName}}</h2>
+
+	<table>
+		<tr>
+			<th>Id</th> <td>{{product.productId}}</td> 
+		</tr>
+
+		<tr>
+			<th>Price</th> <td>{{formatPrice product.productPrice}}</td>
+		</tr>
+
+		{{#if product.productImageURL}}
+	    	<img {{product.productImageURL}}>
+		{{/if}}
+
+		{{#if product.displayImage}}
+			<img src={{formatDisplayImageURL product}}>
+		{{/if}}
+
+	</table>
+
+	<h3> 
+		<a href={{formatAddToCartURL product}}> Add to Cart </a> 
+	</h3>
+
+	<h3> 
+		<a href="listprod">Continue Shopping</a> 
+	</h3>
+</div>

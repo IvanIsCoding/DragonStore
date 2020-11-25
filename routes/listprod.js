@@ -12,6 +12,11 @@ const formatAddToCartURL = (result) => {
     let productName = result.productName.split(" ").join(spaceCode);
     return `addcart?id=${result.productId}&name=${productName}&price=${result.productPrice}`;
 };
+
+const formatProductPageURL = (productId) => {
+    return `product?id=${productId}`;
+};
+
 /* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
@@ -26,57 +31,50 @@ router.get('/', function(req, res, next) {
     }
 
     let pool;
-    let productList;
-    let categoryList;
     (async function() {
-        try {
-            pool = await sql.connect(dbConfig);
 
-            let sqlQuery = `
-                SELECT 
-                    productId,
-                    productName,
-                    productPrice,
-                    categoryName
-                FROM product
-                INNER JOIN category
-                ON product.categoryId = category.categoryId
-                WHERE productName LIKE CONCAT('%', @prodParam, '%')
-                AND (categoryName = @catParam OR @catParam = 'All')
-            `;
+        pool = await sql.connect(dbConfig);
 
-            let categoryQuery = `
-                SELECT categoryName
-                FROM category
-                ORDER BY categoryName ASC
-            `;
+        let sqlQuery = `
+            SELECT 
+                productId,
+                productName,
+                productPrice,
+                categoryName
+            FROM product
+            INNER JOIN category
+            ON product.categoryId = category.categoryId
+            WHERE productName LIKE CONCAT('%', @prodParam, '%')
+            AND (categoryName = @catParam OR @catParam = 'All')
+        `;
 
-            const ps = new sql.PreparedStatement(pool);
-            ps.input('prodParam', sql.VarChar(40));
-            ps.input('catParam', sql.VarChar(50));
-            await ps.prepare(sqlQuery);
+        let categoryQuery = `
+            SELECT categoryName
+            FROM category
+            ORDER BY categoryName ASC
+        `;
 
-            let results = await ps.execute({prodParam: productName, catParam: categoryName});
-            productList = [];
+        const ps = new sql.PreparedStatement(pool);
+        ps.input('prodParam', sql.VarChar(40));
+        ps.input('catParam', sql.VarChar(50));
+        await ps.prepare(sqlQuery);
 
-            for (let result of results.recordset) {
-                productList.push({'result': result});
-            };
+        let results = await ps.execute({prodParam: productName, catParam: categoryName});
+        let productList = [];
 
-            categoryList = ["All"];
-            let categoryResults = await pool.request().query(categoryQuery);
-            for (let categoryResult of categoryResults.recordset) {
-                categoryList.push(categoryResult.categoryName);
-            }
+        for (let result of results.recordset) {
+            productList.push({'result': result});
+        };
 
-        } catch(err) {
-            console.dir(err);
-            res.write(err);
+        let categoryList = ["All"];
+        let categoryResults = await pool.request().query(categoryQuery);
+        for (let categoryResult of categoryResults.recordset) {
+            categoryList.push(categoryResult.categoryName);
         }
-        finally {
-            pool.close();
-        }
-    })().then(() => {
+
+        return [productList, categoryList];
+
+    })().then(([productList, categoryList]) => {
         res.render('listprod', {
             title: 'DBs and Dragons Product List',
             productList: productList,
@@ -84,14 +82,19 @@ router.get('/', function(req, res, next) {
             pageActive: {'listprod': true},
             helpers: {
                 formatPrice,
-                formatAddToCartURL
+                formatAddToCartURL,
+                formatProductPageURL
             }
         });
-    }).catch(() => {
+    }).catch((err) => {
         console.dir(err);
-        res.write(err);
-        res.end();
-    });;
+        res.render('error', {
+            title: 'DBs and Dragons Product List',
+            errorMessage: `Error, contact your admin: ${err}`,
+        });
+    }).finally(() => {
+        pool.close();
+    });
 
 });
 
