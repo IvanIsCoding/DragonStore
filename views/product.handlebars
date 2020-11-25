@@ -19,11 +19,11 @@
 		</tr>
 
 		{{#if product.productImageURL}}
-	    	<img {{product.productImageURL}}>
+	    	<img src={{product.productImageURL}}>
 		{{/if}}
 
 		{{#if product.displayImage}}
-			<img src={{formatDisplayImageURL product}}>
+			<img src={{formatDisplayImageURL product.productId}}>
 		{{/if}}
 
 	</table>

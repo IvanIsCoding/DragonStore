@@ -20,22 +20,42 @@ const formatDisplayImageURL = (productId) => {
 
 router.get('/', function(req, res, next) {
     
+    let productId = req.query.id;
+
     let pool;
     (async function() {
         pool = await sql.connect(dbConfig);
-        throw "This page has not been implemented yet";
 
-    	// Get product name to search for
-    	// TODO: Retrieve and display info for the product
+        let sqlQuery = `
+            SELECT
+                productId,
+                productName,
+                productPrice,
+                productImageURL,
+                CASE 
+                    WHEN productImage IS NOT NULL THEN 1
+                    ELSE NULL
+                END AS displayImage
+            FROM product
+            WHERE productId = @param
+        `;
 
-    	// TODO: If there is a productImageURL, display using IMG tag
+        const ps = new sql.PreparedStatement(pool);
+        ps.input('param', sql.Int);
+        await ps.prepare(sqlQuery);
 
-    	// TODO: Retrieve any image stored directly in database. Note: Call displayImage.jsp with product id as parameter.
+        let results = await ps.execute({param: productId});
+        if(results.recordset.length > 0) { // product exists in database
+            let product = results.recordset[0];
+            return product;
+        } else {
+            throw "Product not found in the database"
+        }
 
-    	// TODO: Add links to Add to Cart and Continue Shopping
-    })().then(() => {
+    })().then((product) => {
         res.render('product', {
             title: 'DBs and Dragons Product Page',
+            product: product,
             helpers: {
                 formatPrice,
                 formatAddToCartURL,
