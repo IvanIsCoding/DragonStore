@@ -12,11 +12,16 @@ router.get('/', function(req, res, next) {
         return;
     }
 
+    let pool;
     (async function() {
         try {
-            let pool = await sql.connect(dbConfig);
+            pool = await sql.connect(dbConfig);
 
-            let sqlQuery = "// TODO: Modify SQL to retrieve productImage given productId";
+            let sqlQuery = `
+                SELECT productImage
+                FROM product
+                WHERE productId = @id
+            `;
 
             result = await pool.request()
                 .input('id', sql.Int, idVal)
@@ -32,11 +37,12 @@ router.get('/', function(req, res, next) {
                 res.write(productImage);
             }
 
-            res.end()
         } catch(err) {
             console.dir(err);
-            res.write(err + "")
+            res.write(err + "");
+        } finally {
             res.end();
+            pool.close();
         }
     })();
 });
