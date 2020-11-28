@@ -3,8 +3,6 @@ const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
 
-// Helper functions
-
 router.get('/', function(req, res, next) {
     let pool;
     (async function() {
@@ -127,38 +125,6 @@ router.get('/', function(req, res, next) {
     });
 
 });
-		  
-           // TODO: Start a transaction
-	   	
-	   	// TODO: Retrieve all items in order with given id
-	   	// TODO: Create a new shipment record.
-	   	// TODO: For each item verify sufficient quantity available in warehouse 1.
-	   	// TODO: If any item does not have sufficient inventory, cancel transaction and rollback. Otherwise, update inventory for each item.
-
-        /*
-        Data format:
-            successfulShipment: what could be shipped (right quantity) found on the for loop before the failedProductId
-            :type: array of JSONS of type shipment
-            [{id: 1, qty: 3, oldInventory: 5, newInventory: 2}, {id: 2, qty: 1, oldInventory: 2, newInventory: 1}]
-
-            :shipment: has:
-                id: productId
-                qty: quantity from order
-                oldInventory: quantity in stock before
-                newInventory: oldInventory - qty
-
-            example: {id: 1, qty: 3, oldInventory: 5, newInventory: 2}
-
-            shipmentSucceeded: boolean, true if loop finished without rollback, false otherwise
-            example: false
-            
-            failedProductId: id of product that broke the loop and triggered the transaction.
-            example: 1, 2, null
-            
-        */
-
-/* if things go wrong try await transaction.begin() */
-
 
 module.exports = router;
 
