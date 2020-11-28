@@ -1,0 +1,36 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<div class="dragon-body">
+
+    <table class="dragon-table">
+        <thead> 
+            <tr>
+                <th>Ordered Product</th>
+                <th>Quantity</th>
+                <th>Previous Inventory</th>
+                <th>New Inventory</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {{#each successfulShipment as | shipment |}}
+            <tr>
+                <td> {{id}} </td> 
+                <td> {{qty}} </td>
+                <td> {{oldInventory}} </td>
+                <td> {{newInvetory}} </td>
+            </tr>
+        {{/each}}
+        </tbody>
+    </table>
+
+    {{#if shipmentSucceeded}}
+    <h2> Shipment successfully processed </h2>
+    {{else}}
+    <h2> Shipment not done. Insufficient inventory for product id: {{failedProductId}} </h2>
+    {{/if}}
+
+    <h2><a href="listprod">Back to Main Page</a></h2> 
+</div>
