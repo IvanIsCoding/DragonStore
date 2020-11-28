@@ -1,4 +1,4 @@
-# COSC 304 - Lab 7 - Project Group 32
+# COSC 304 - Lab 8 - Project Group 32
 
 ## Members
 
