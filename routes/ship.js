@@ -65,11 +65,14 @@ router.get('/', function(req, res, next) {
         let shipmentSucceeded = true;
         successfulShipment = [];
 
+        const transaction = await new sql.Transaction(pool);
+
         // Update statmenets will be below: start transaction here and have rollback code prepared
+
+        await transaction.begin();
         for(let product of productData){
             // We have sufficent qty, update DB and add to successfulShipment
             if(product.qtyNeed <= product.qtyHave){
-                
                 let newQty = product.qtyHave - product.qtyNeed;
                 // Save the old qty and new qty somewhere
                 productUpdateResult = await psUpdateInventory.execute({qtyUpdate: newQty, pid: product.pid})
@@ -79,13 +82,15 @@ router.get('/', function(req, res, next) {
                     oldInventory: product.qtyHave,
                     newInventory: newQty
                 })
-            }else{ // Insufficent qty in warehouse one: break the loop, rollback
+            }
+            else{
                 failedId = product.pid;
                 shipmentSucceeded = false;
-                // rollback code
-                break;
+                await transaction.rollback();
+                return [successfulShipment,shipmentSucceeded,failedId];
             }
-        }  
+        }
+            
         // Shipment success: insert a shipment record using the orderData we retrived earlier
         let shipmentQuery = `
         INSERT INTO shipment(shipmentDate,warehouseId)
@@ -95,10 +100,9 @@ router.get('/', function(req, res, next) {
         psInsertshipment.input('date', sql.DateTime);
         await psInsertshipment.prepare(shipmentQuery);
         shipmentResult = await psInsertshipment.execute({date: new Date()});
+        await transaction.commit();
 
         return [successfulShipment, shipmentSucceeded, failedId];
-
-        
     })().then(([successfulShipment, shipmentSucceeded, failedProductId]) => {
         console.log(successfulShipment);
         console.log(failedProductId);
@@ -148,6 +152,9 @@ router.get('/', function(req, res, next) {
             example: 1, 2, null
             
         */
+
+/* if things go wrong try await transaction.begin() */
+
 
 module.exports = router;
 
