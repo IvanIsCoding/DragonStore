@@ -25,8 +25,8 @@ router.get('/', function(req, res, next) {
             WHERE orderId = @param
         `;
 
-        const psOrder = new sql.PreparedStatement(pool);
-        psOrder.input('param',sql.Int);
+        const psOrder = await new sql.PreparedStatement(pool);
+        await psOrder.input('param',sql.Int);
         await psOrder.prepare(validOrderQuery);
         let validOrderResult = await psOrder.execute({param: orderId});
         // No hits in db for our order
@@ -44,32 +44,34 @@ router.get('/', function(req, res, next) {
         WHERE orderproduct.orderId = @oid AND warehouseId = 1;
         `;
 
-        const psProductData = new sql.PreparedStatement(pool)
-        psProductData.input('oid',sql.Int);
+        const psProductData = await new sql.PreparedStatement(pool)
+        await psProductData.input('oid',sql.Int);
         await psProductData.prepare(productQuery);
         let productDataResult = await psProductData.execute({oid: orderId})
-        productData = productDataResult.recordset;
+        productData = await productDataResult.recordset;
 
+        const transaction = await new sql.Transaction(pool);
+        await transaction.begin();
         // Have product data, prepare our repeated update query
         let updateQuery = `
         UPDATE productinventory 
         SET quantity = @qtyUpdate
         WHERE warehouseId = 1 AND productId = @pid
         `;
-        const psUpdateInventory = new sql.PreparedStatement(pool);
-        psUpdateInventory.input('qtyUpdate',sql.Int);
-        psUpdateInventory.input('pid', sql.Int);
+        const psUpdateInventory = await new sql.PreparedStatement(transaction);
+        await psUpdateInventory.input('qtyUpdate',sql.Int);
+        await psUpdateInventory.input('pid', sql.Int);
         await psUpdateInventory.prepare(updateQuery)
         // Prepare our initial variable states for the for loop
         let failedId = null;
         let shipmentSucceeded = true;
         successfulShipment = [];
 
-        const transaction = await new sql.Transaction(pool);
+        
 
         // Update statmenets will be below: start transaction here and have rollback code prepared
 
-        await transaction.begin();
+
         for(let product of productData){
             // We have sufficent qty, update DB and add to successfulShipment
             if(product.qtyNeed <= product.qtyHave){
@@ -86,26 +88,28 @@ router.get('/', function(req, res, next) {
             else{
                 failedId = product.pid;
                 shipmentSucceeded = false;
+                await psUpdateInventory.unprepare();
                 await transaction.rollback();
                 return [successfulShipment,shipmentSucceeded,failedId];
             }
         }
-            
+        await psUpdateInventory.unprepare();
         // Shipment success: insert a shipment record using the orderData we retrived earlier
         let shipmentQuery = `
         INSERT INTO shipment(shipmentDate,warehouseId)
         VALUES(@date,1)
         `;
-        const psInsertshipment = new sql.PreparedStatement(pool);
-        psInsertshipment.input('date', sql.DateTime);
+        const psInsertshipment = await new sql.PreparedStatement(transaction);
+        await psInsertshipment.input('date', sql.DateTime);
         await psInsertshipment.prepare(shipmentQuery);
         shipmentResult = await psInsertshipment.execute({date: new Date()});
+        await psInsertshipment.unprepare();
+        // No errors thus far: time to commit
         await transaction.commit();
 
         return [successfulShipment, shipmentSucceeded, failedId];
+
     })().then(([successfulShipment, shipmentSucceeded, failedProductId]) => {
-        console.log(successfulShipment);
-        console.log(failedProductId);
         res.render('ship', {
             title: 'DBs and Dragons Shipment Page',
             successfulShipment: successfulShipment,
