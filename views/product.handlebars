@@ -6,6 +6,18 @@
 	<h2>{{product.productName}}</h2>
 
 	<table>
+
+		<tr>
+			<th>Descrption</th> 
+			<td>
+			{{#if product.productDesc}}
+				{{product.productDesc}}
+			{{else}}
+				This item has no description. Perhaps a dragon ate it.
+			{{/if}}
+			</td> 
+		</tr>
+
 		<tr>
 			<th>Id</th> <td>{{product.productId}}</td> 
 		</tr>

@@ -31,6 +31,7 @@ router.get('/', function(req, res, next) {
                 productId,
                 productName,
                 productPrice,
+                productDesc,
                 productImageURL,
                 CASE 
                     WHEN productImage IS NOT NULL THEN 1
