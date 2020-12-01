@@ -26,63 +26,49 @@ const formatDate = (orderDate) => {
 router.get('/', function(req, res, next) {
 
     let pool;
-    let orderListData;
     (async function() {
-        try {
-            pool = await sql.connect(dbConfig);
+        pool = await sql.connect(dbConfig);
 
-            let sqlQuery = `
-                SELECT 
-                    ordersummary.orderId, 
-                    orderDate,
-                    customer.customerId,
-                    CONCAT(customer.firstName, ' ', customer.lastName) AS customerName,
-                    COALESCE(SUM(price*quantity), 0) AS total
-                FROM ordersummary
-                INNER JOIN customer
-                ON ordersummary.customerId = customer.customerId
-                INNER JOIN orderproduct
-                ON ordersummary.orderId = orderproduct.orderId
-                GROUP BY 
-                    ordersummary.orderId, 
-                    orderDate, customer.customerId, 
-                    CONCAT(customer.firstName, ' ', customer.lastName)
-            `;
+        let sqlQuery = `
+            SELECT 
+                ordersummary.orderId, 
+                orderDate,
+                customer.customerId,
+                CONCAT(customer.firstName, ' ', customer.lastName) AS customerName,
+                COALESCE(SUM(price*quantity), 0) AS total
+            FROM ordersummary
+            INNER JOIN customer
+            ON ordersummary.customerId = customer.customerId
+            INNER JOIN orderproduct
+            ON ordersummary.orderId = orderproduct.orderId
+            GROUP BY 
+                ordersummary.orderId, 
+                orderDate, customer.customerId, 
+                CONCAT(customer.firstName, ' ', customer.lastName)
+        `;
 
-            let subQuery = `
-                SELECT
-                    productId,
-                    quantity,
-                    price
-                FROM orderproduct
-                WHERE orderId = @param
-            `;
+        let subQuery = `
+            SELECT
+                productId,
+                quantity,
+                price
+            FROM orderproduct
+            WHERE orderId = @param
+        `;
 
-            let results = await pool.request().query(sqlQuery);
-            orderListData = [];
+        let results = await pool.request().query(sqlQuery);
+        let orderListData = [];
 
-            for (let result of results.recordset) {
+        for (let result of results.recordset) {
+            const ps = new sql.PreparedStatement(pool);
+            ps.input('param', sql.Int);
+            await ps.prepare(subQuery);
+            let subResults = await ps.execute({param: result.orderId});
+            orderListData.push({'result': result, 'subResults': subResults.recordset});
+        };
 
-                const ps = new sql.PreparedStatement(pool);
-                ps.input('param', sql.Int);
-                await ps.prepare(subQuery);
-
-                let subResults = await ps.execute({param: result.orderId});
-
-                orderListData.push({'result': result, 'subResults': subResults.recordset});
-
-            };
-
-            //writeTable(res, orderListData);
-
-        } catch(err) {
-            console.dir(err);
-            res.write(err)
-        }
-        finally {
-            pool.close();
-        }
-    })().then(() => {
+        return orderListData;
+    })().then((orderListData) => {
         res.render('listorder', {
             title: 'DBs and Dragons Grocery Order List',
             orderListData: orderListData,
@@ -94,8 +80,12 @@ router.get('/', function(req, res, next) {
         });
     }).catch((err) => {
         console.dir(err);
-        res.write(err);
-        res.end();
+        res.render('error', {
+            title: 'DBs and Dragons Grocery Order List',
+            errorMessage: `Error, contact your admin: ${err}`,
+        });
+    }).finally(() => {
+        pool.close();
     });
 });
 

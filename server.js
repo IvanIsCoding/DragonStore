@@ -86,6 +86,6 @@ app.use('/customerauthentication', customerAuthentication);
 
 // Setting up where static assets should
 // be served from.
-app.use(express.static("public"));
+app.use('/', express.static("public"));
 
 app.listen(3000)
