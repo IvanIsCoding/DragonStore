@@ -1,0 +1,34 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+{{#each orderListData as | data |}}
+<table class="dragon-table noround">
+    <thead>
+        <tr>
+            <th colspan="3">Order Number: {{result.orderId}}</th>
+        </tr>
+        <tr style="background: #009879;">
+            <th>Product</th> <th>Quantity</th> <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#each subResults as | subResult |}}
+        <tr> 
+            <td>{{productName}}</td> <td>{{quantity}}</td> 
+            <td>{{formatPrice price}}</td> 
+        </tr>
+    {{/each}}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th scope="row" colspan="2">Total</th>
+            <td>{{formatPrice result.total}}</td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="2">Order Date</th>
+            <td>{{formatDate result.orderDate}}</td>
+        </tr>
+    </tfoot>
+</table>
+{{/each}}  
