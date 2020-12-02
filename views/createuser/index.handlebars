@@ -1,0 +1,116 @@
+<title>{{title}}</title>
+
+<script type="text/javascript">
+var stateObject = {
+	"Canada": [
+		"Alberta", 
+		"British Columbia", 
+		"Manitoba", 
+		"New Brunswick", 
+		"Newfoundland and Labrador", 
+		"Nova Scotia", 
+		"Ontario", 
+		"Prince Edward Island", 
+		"Québec", 
+		"Saskatchewan",
+		"Northwest Territories", 
+		"Nunavut",
+		"Yukon",
+	],
+	"US": [
+		"California",
+		"Oregon",
+		"Washington",
+		"Other"
+	]
+};
+</script>
+
+{{> banner }}
+
+{{! 
+	CREATE TABLE customer (
+    customerId          INT IDENTITY,
+    firstName           VARCHAR(40),
+    lastName            VARCHAR(40),
+    email               VARCHAR(50),
+    phonenum            VARCHAR(20),
+    address             VARCHAR(50),
+    city                VARCHAR(40),
+    state               VARCHAR(20),
+    postalCode          VARCHAR(20),
+    country             VARCHAR(40),
+    userid              VARCHAR(20),
+    password            VARCHAR(30),
+}}
+
+<form method="post" action="/createuser/validate">
+	<table>
+		
+		<tr>
+			<td>Userid: </td><td><input type="text" name="userid" size="20"></td>
+		</tr>
+		
+		<tr>
+			<td>Email: </td><td><input type="text" name="email" size="50"></td>
+		</tr>
+		
+		<tr>
+			<td>First Name:</td><td><input type="text" name="firstname" size="40"></td>
+		</tr>
+		
+		<tr>
+			<td>Last Name:</td><td><input type="text" name="lastname" size="40"></td>
+		</tr>
+		
+		<tr>
+			<td>Phone Number (optional):</td><td><input type="text" name="phonenumber" size="20"></td>
+		</tr>
+		
+		<tr>
+			<td>Address:</td><td><input type="text" name="address" size="50"></td>
+		</tr>
+		
+		<tr>
+			<td>Country</td>
+			<td>
+				<select size="1" name="country">
+					<option>Canada</option>
+                	<option>United States</option>
+           		</select>
+           	</td>
+		</tr>
+
+		<tr>
+			<td>Province / State</td>
+			<td>
+				<select size="1" name="province">
+					<option>Alberta</option>
+                	<option>British Columbia</option>
+           		</select>
+           	</td>
+		</tr>
+
+		<tr>
+			<td>City:</td><td><input type="text" name="city" size="40"></td>
+		</tr>
+
+		<tr>
+			<td>Postal Code:</td><td><input type="text" name="postalcode" size="40"></td>
+		</tr>
+
+
+		<tr>
+			<td>Password:</td><td><input type="password" name="password" size="30"></td>
+		</tr>
+		
+		<tr>
+			<td>Confirm Password:</td><td><input type="password" name="confirmpassword" size="30"></td>
+		</tr>
+		
+		<tr>
+			<td> <input type="submit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
+		</tr>
+
+	</table>
+</form>
