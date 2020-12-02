@@ -37,7 +37,7 @@ router.post('/validate', function(req, res, next) {
         		@userid, @email, @firstname, @lastname, @phonenumber, 
         		@address, @country, @province, @city, @postalcode, @password
         	);
-        	SELECT SCOPE_IDENTITY() AS id;
+        	SELECT SCOPE_IDENTITY() AS customerId;
         `;
 
         // Create prepared statement     
@@ -56,10 +56,16 @@ router.post('/validate', function(req, res, next) {
 
         await ps.prepare(insertQuery);
 
-    })().then(() => {
+        let insertionResults = await ps.execute(req.body);
+        let customerId = insertionResults.recordset[0].customerId;
+
+        return customerId;
+
+    })().then((customerId) => {
         res.render('createuser/success', {
             title: 'DBs and Dragons User Account has Been Created',
             pageActive: {'create': true},
+            customerId: customerId
         });
     }).catch((err) => {
         console.dir(err);
