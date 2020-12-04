@@ -44,6 +44,12 @@ var stateObject = {
     password            VARCHAR(30),
 }}
 
+{{#if userWarning}}
+    <b> {{userWarning}} </b> 
+    <br>
+    <br>
+{{/if}}
+
 <form method="post" action="/createuser/validate">
 	<table>
 		
