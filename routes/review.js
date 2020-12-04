@@ -1,26 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../auth');
 const sql = require('mssql');
-
-/* Start of Handlebars helpers */
-const formatPrice = (price) => {
-    return `\$${Number(price).toFixed(2)}`
-};
-
-const formatAddToCartURL = (result) => {
-    const spaceCode = '%20';
-    let productName = result.productName.split(" ").join(spaceCode);
-    return `addcart?id=${result.productId}&name=${productName}&price=${result.productPrice}`;
-};
-
-const formatDisplayImageURL = (productId) => {
-    return `displayImage?id=${productId}`;
-};
-
-const formatReviewPageURL = (productId) => {
-    return `review?id=${productId}`;
-};
-/* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
     
@@ -66,35 +47,36 @@ router.get('/', function(req, res, next) {
     psReview.input('pid', sql.Int);
     await psReview.prepare(sqlReviewQuery);
 
-    let reviewResults = await psReview.execute({pid: productId});
+    let reviewResults = await psReview.execute({param: productId});
 
-    if(reviewResults.recordset.length > 0 && results.recordset.length > 0){
+    if(reviewResults.recordset.length > 0){
         let review = reviewResults.recordset;
+        return review;
+    }
+    else if(reviewResults.recordset.length === 0){
+        throw "No review"
+    }
+
+    if(results.recordset.length > 0) { // product exists in database
         let product = results.recordset[0];
-        console.log(review)
-        return [product, review];
+        return product;
+    } else {
+         throw "Product not found in the database"
     }
-    else if(results.recordset.length > 0 && reviewResults.recordset.length === 0){
-        let product = results.recordset[0];
-        console.log("review empty")
-        return [product, {}];
-    }
-    else{
-        throw "Product not found in the database"
-    }
+
 
     })().then(([product, reviews]) => {
-            res.render('product', {
-                title: 'DBs and Dragons Product Page',
-                product: product,
-                reviews: reviews,
-                helpers: {
-                    formatPrice,
-                    formatAddToCartURL,
-                    formatDisplayImageURL,
-                    formatReviewPageURL
-                }
-            });
+        res.render('product', {
+            title: 'DBs and Dragons Product Page',
+            product: product,
+            reviews: reviews,
+            helpers: {
+                formatPrice,
+                formatAddToCartURL,
+                formatDisplayImageURL,
+                formatReviewPageURL
+            }
+        });
     }).catch((err) => {
         console.dir(err);
         res.render('error', {

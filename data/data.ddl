@@ -230,6 +230,10 @@ INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId,
 INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId, 19, 2, 81)
 INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId, 20, 3, 10);
 
+-- New SQL DDL for lab 10
+INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (2, '2019-10-15 10:25:55', 1, 1, 'suck ass')
+INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (2, '2019-10-15 10:25:55', 2, 1, 'suck ass')
+
 -- New SQL DDL for lab 8
 UPDATE Product SET productImageURL = 'img/1.jpg' WHERE ProductId = 1;
 UPDATE Product SET productImageURL = 'img/2.jpg' WHERE ProductId = 2;

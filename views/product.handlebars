@@ -23,6 +23,14 @@
 		{{/if}}
 
 	</table>
+		{{#each reviews as | productReview |}}
+
+		<p>{{productId}}</p> <p>{{reviewRating}} {{reviewDate}}</p> <p>{{reviewRating}}</p> <p>{{reviewRating}}</p>
+
+		{{/each}}
+	<h3> 
+		<a href={{formatReviewPageURL}}> Review </a> 
+	</h3>
 
 	<h3> 
 		<a href={{formatAddToCartURL product}}> Add to Cart </a> 
@@ -31,4 +39,5 @@
 	<h3> 
 		<a href="listprod">Continue Shopping</a> 
 	</h3>
+
 </div>
