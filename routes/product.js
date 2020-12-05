@@ -7,6 +7,18 @@ const formatPrice = (price) => {
     return `\$${Number(price).toFixed(2)}`
 };
 
+const formatDate = (orderDate) => {
+    let dateFormatOptions = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit',
+    };
+    let formattedDate = orderDate.toLocaleDateString("en-US", dateFormatOptions);
+    return formattedDate;
+};
+
 const formatAddToCartURL = (result) => {
     const spaceCode = '%20';
     let productName = result.productName.split(" ").join(spaceCode);
@@ -51,12 +63,15 @@ router.get('/', function(req, res, next) {
             reviewId,
             reviewRating,
             reviewDate,
-            customerId,
+            review.customerId,
             productId,
-            reviewComment
+            reviewComment,
+            firstName
         FROM review
+        INNER JOIN customer
+        ON review.customerId = customer.customerId
         WHERE productId = @pid
-    `;
+        `;
     const ps = new sql.PreparedStatement(pool);
     ps.input('param', sql.Int);
     await ps.prepare(sqlQuery);
@@ -91,6 +106,7 @@ router.get('/', function(req, res, next) {
                 reviews: reviews,
                 helpers: {
                     formatPrice,
+                    formatDate,
                     formatAddToCartURL,
                     formatDisplayImageURL,
                     formatReviewPageURL

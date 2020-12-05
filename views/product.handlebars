@@ -35,14 +35,27 @@
 		{{/if}}
 
 	</table>
+
+	<table class="dragon-table">
+		<thead>
+			<tr>
+				<th> Rating </th> <th>Date</th> <th>Comment</th> <th>Reviewer</th>
+			</tr>
+		</thead>
+		<tbody>
 		{{#each reviews as | productReview |}}
-
-		<p>{{productId}}</p> <p>{{reviewRating}} {{reviewDate}}</p> <p>{{reviewRating}}</p> <p>{{reviewRating}}</p>
-
+		<tr>
+			<td>{{reviewRating}}</td> <td>{{formatDate reviewDate}}</td> <td>{{reviewComment}}</td> <td>{{firstName}}</td>
+		</tr>
 		{{/each}}
+		</tbody>
+	</table>
+	<!--
 	<h3> 
-		<a href={{formatReviewPageURL}}> Review </a> 
-	</h3>
+		<a href={{formatReviewPageURL product.productId}}> Review </a> 
+		</h3>
+	}}
+	-->
 
 	<h3> 
 		<a href={{formatAddToCartURL product}}> Add to Cart </a> 
