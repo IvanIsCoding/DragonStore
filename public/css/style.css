@@ -69,6 +69,14 @@
     border-top-right-radius: 25px;
 }
 
+.dragon-table.noround th:first-child {
+    border-top-left-radius: 0px;
+}
+
+.dragon-table.noround th:last-child {
+    border-top-right-radius: 0px;
+}
+
 .dragon-table .noround th:first-child {
     border-top-left-radius: 0px;
 }

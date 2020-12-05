@@ -23,6 +23,7 @@ let ship = require('./routes/ship');
 let updateCart = require('./routes/updatecart');
 let removeCart = require('./routes/removecart');
 let customerAuthentication = require('./routes/customerauthentication');
+let createUser = require('./routes/createuser');
 
 const app = express();
 
@@ -83,9 +84,10 @@ app.use('/ship', ship);
 app.use('/updatecart', updateCart);
 app.use('/removecart', removeCart);
 app.use('/customerauthentication', customerAuthentication);
+app.use('/createuser', createUser);
 
 // Setting up where static assets should
 // be served from.
-app.use(express.static("public"));
+app.use('/', express.static("public"));
 
 app.listen(3000)
