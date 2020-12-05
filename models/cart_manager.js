@@ -23,20 +23,23 @@ const addItem = async (session, pool, id, name, price) => {
     session.productList = productList;
     // If the user is not logged in, we do not update the DB
     if(!isLoggedIn(session)){
+    if(!getUser(session)){ // Not logged in
         console.log("Not logged in");
         return;
     }
     // Update db with our cart information
-    let sql = `
-    INSERT INTO incart(orderId,productId,quantity,price) 
-    VALUES(@oid,@pid,@qty,@price)
+    let sql = ` 
+    INSERT INTO incart(userId,productId,quantity,price) 
+    VALUES(@uid,@pid,1,@price)
     `
+    // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
-    psCart.input("cid",sql.Int);
+    psCart.input("uid",sql.Int);
     psCart.input("pid",sql.Int);
-    psCart.input("qty",sql.Int);
     psCart.input("price",sql.Decimal);
-
+    await psCart.prepare(sql);
+    await psCart.execute({uid:getUser(session),pid:id,price:price})
+    console.log("Inserting into db success");
 };
 
 // Remove an item from our sessional and db cart
@@ -76,6 +79,7 @@ const getSessionCart = (session) => {
 
 // Check if this user is logged in
 const isLoggedIn = (session) =>{
+const getUser = (session) =>{
     //req.session.authenticatedUser = authenticatedUser;
     return session.authenticatedUser;
 };
