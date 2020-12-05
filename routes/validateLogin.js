@@ -2,14 +2,18 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../auth');
 const sql = require('mssql');
+const cartManager = require('../models/cart_manager');
 
 router.post('/', function(req, res) {
     // Have to preserve async context since we make an async call
     // to the database in the validateLogin function.
+    let pool;
     (async () => {
         let authenticatedUser = await validateLogin(req);
         if (authenticatedUser) {
             req.session.authenticatedUser = authenticatedUser;
+            pool = await sql.connect(dbConfig);
+            cartManager.loadCart(req.session, pool)
             res.redirect("/");
         } else {
             req.session.loginMessage = "Access denied. At least one of the username or password is incorrect.";
