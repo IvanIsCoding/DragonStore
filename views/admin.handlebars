@@ -20,4 +20,19 @@
 		</tbody>
 	</table>
 
+		<table class="dragon-table">
+		<thead>
+			<tr>
+				<th>Customers</th> <th>Number of orders</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each Customer as | CustomerDate |}}
+				<tr>
+					<td>{{firstname}} {{lastname}}</td> <td>{{TotalOrder}}</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+
 </div>

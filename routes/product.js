@@ -18,7 +18,7 @@ const formatDisplayImageURL = (productId) => {
 };
 
 const formatReviewPageURL = (productId) => {
-    return `review?id=${productId}`;
+    return `review?id=${productId}&`;
 };
 /* End of Handlebars helpers */
 
