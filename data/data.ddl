@@ -22,7 +22,7 @@ CREATE TABLE customer (
     state               VARCHAR(20),
     postalCode          VARCHAR(20),
     country             VARCHAR(40),
-    userid              VARCHAR(20),
+    userid              VARCHAR(20) NOT NULL UNIQUE,
     password            VARCHAR(30),
     PRIMARY KEY (customerId)
 );
@@ -82,16 +82,19 @@ CREATE TABLE orderproduct (
     FOREIGN KEY (productId) REFERENCES product(productId)
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
-
+/* CHANGE TO DDL: incart needs to reference a specific customer as orderId is not known until checkout 
+replaced orderId with userId, a stored sessional variable referencing a customer*/
 CREATE TABLE incart (
-    orderId             INT,
+    userId              INT,
     productId           INT,
     quantity            INT,
     price               DECIMAL(10,2),  
-    PRIMARY KEY (orderId, productId),
+    PRIMARY KEY (userId,productId),
     FOREIGN KEY (orderId) REFERENCES ordersummary(orderId)
         ON UPDATE CASCADE ON DELETE NO ACTION,
     FOREIGN KEY (productId) REFERENCES product(productId)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+    FOREIGN KEY (userId) REFERENCES customer(userid)
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
