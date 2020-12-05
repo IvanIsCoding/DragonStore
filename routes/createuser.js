@@ -7,7 +7,24 @@ const validatePasswordMatch = (password1, password2) => {
     return password1 === password2;
 };
 
-const validateUserid = () => {
+const validateUserid = async (pool, username) => {
+    let sqlQuery = `
+        SELECT 
+            userid
+        FROM customer
+        WHERE userid = @param;
+    `;
+
+    // Create prepared statement     
+    const ps = new sql.PreparedStatement(pool);
+    ps.input('param', sql.VarChar(20));
+    await ps.prepare(sqlQuery);
+
+    let results = await ps.execute({param: username});
+    if(results.recordset.length > 0) { // userid exists in database
+        return false;
+    }
+
     return true;
 };
 
@@ -27,6 +44,40 @@ const validatePostalCode = (postalCode) => {
 const validateEmail = (email) => {
     const matchedValue = email.match(/^\S+@\S+$/);
     return !!matchedValue;
+};
+
+const validateCountry = (country) => {
+    return ["Canada", "United States"].includes(country);
+};
+
+const validateProvince = (country, province) => {
+    const provinceList = {
+        "Canada": [
+            "Alberta", 
+            "British Columbia", 
+            "Manitoba", 
+            "New Brunswick", 
+            "Newfoundland and Labrador", 
+            "Nova Scotia", 
+            "Ontario", 
+            "Prince Edward Island", 
+            "Québec", 
+            "Saskatchewan",
+            "Northwest Territories", 
+            "Nunavut",
+            "Yukon",
+        ],
+        "United States": [
+            "California",
+            "Oregon",
+            "Washington",
+            "Other"
+        ]
+    };
+    if (!validateCountry(country)) {
+        return false;
+    }
+    return provinceList[country].includes(province);
 };
 /* End of back-end validator functions */
 
@@ -57,7 +108,6 @@ router.get('/', function(req, res, next) {
 router.post('/validate', function(req, res, next) {
 
     let body = req.body;
-	console.log(req.body);
 
     if(!validatePasswordMatch(body.password, req.body.confirmpassword)) {
         req.session.createUserWarning = "Error: your password confirmation does not match";
@@ -83,9 +133,29 @@ router.post('/validate', function(req, res, next) {
         return;
     }
 
+    if(!validateCountry(body.country)){
+        req.session.createUserWarning = "Error: We do not offer services in your country";
+        res.redirect(`/createuser`);
+        return;
+    }
+
+    if(!validateProvince(body.country, body.province)){
+        req.session.createUserWarning = "Error: We do not offer services in your province or state";
+        res.redirect(`/createuser`);
+        return;
+    }
+
     let pool;
     (async function() {
         pool = await sql.connect(dbConfig);
+
+        if (!(await validateUserid(pool, body.userid))) {
+            req.session.createUserWarning = "Error: Username already exists; pick a new username";
+        }
+
+        if (req.session.createUserWarning) { // user warning exists, something is invalid and user shouldn't be created
+            return;
+        }
 
         let insertQuery = `
         	INSERT INTO customer (
@@ -121,6 +191,11 @@ router.post('/validate', function(req, res, next) {
         return customerId;
 
     })().then((customerId) => {
+
+        if (req.session.createUserWarning) {
+            res.redirect(`/createuser`);
+        }
+
         res.render('createuser/success', {
             title: 'DBs and Dragons User Account has Been Created',
             pageActive: {'create': true},
