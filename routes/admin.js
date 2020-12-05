@@ -46,6 +46,11 @@ router.get('/', checkLogin, function(req, res, next) {
             ORDER BY CAST(orderDate AS DATE) DESC;
         `;
 
+        let sqlSaleSumQuery = `
+            SELECT COUNT(orderId) AS TotalSaleOrder , SUM(totalAmount) AS TotalSale
+            FROM ordersummary
+        `
+
         let sqlCustomerQuery = `
             SELECT firstname, lastname, COUNT(orderId) AS TotalOrder
             FROM customer JOIN ordersummary ON customer.customerId = ordersummary.customerId
@@ -56,14 +61,19 @@ router.get('/', checkLogin, function(req, res, next) {
         await psCus.prepare(sqlCustomerQuery);
         let Cusresults = await psCus.execute();
 
+        const psSale = new sql.PreparedStatement(pool);
+        await psSale.prepare(sqlSaleSumQuery);
+        let SaleResults = await psSale.execute();  
+
         let results = await pool.request().query(sqlQuery);
 
-        return [results.recordset, Cusresults.recordset];
-        })().then(([salesData, Customer]) => {
+        return [results.recordset, Cusresults.recordset, SaleResults.recordset];
+        })().then(([salesData, Customer, Sale]) => {
         res.render('admin', {
             title: 'DBs and Dragons Admin Page',
             salesData: salesData,
             Customer: Customer,
+            Sale: Sale,
             pageActive: {'order': true},
             helpers: {
                 formatPrice,

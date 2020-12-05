@@ -34,5 +34,20 @@
 		</tbody>
 	</table>
 
+	<table class="dragon-table">
+		<thead>
+			<tr>
+				<th>Total order so far</th> <th>Revenue</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each Sale as | SaleData |}}
+				<tr>
+					<td>{{TotalSaleOrder}}</td> <td>{{formatPrice TotalSale}}</td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+
 
 </div>
