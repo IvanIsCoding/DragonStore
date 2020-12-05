@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
+const cartManager = require('../models/cart_manager');
 
 /* Start of Handlebars helpers */
 const formatPrice = (price) => {
@@ -27,10 +28,15 @@ function checkAuthentication(req, res, next) {
 router.get('/', checkAuthentication, function(req, res, next) {
 
     // If the request has the product list, store it.
+
     let productList = false;
     if (req.session.productList && req.session.productList.length > 0) {
         productList = req.session.productList;
     }
+
+    /*
+    let productList = cartManager.getSessionCart(req.session);
+    */
 
     // If the request has the customer id, store it.
     let customerId = false;
