@@ -1,5 +1,8 @@
 const express = require('express');
+const { updateQty } = require('../models/cart_manager');
 const router = express.Router();
+const sql = require('mssql');
+const cartManager = require('../models/cart_manager');
 
 router.get('/', function(req, res, next) {
     res.setHeader('Content-Type', 'text/html');
@@ -23,18 +26,15 @@ router.get('/', function(req, res, next) {
         res.redirect("/listprod");
     }
 
-    // Update quantity if product exists in list
-    // And the quantity is a valid non-negative integer
-    if (productList[id] && Number.isInteger(qty) && qty >= 0){
-        productList[id].quantity = qty;
-        if (qty == 0) { // special case: delete item
-            delete productList[id];
-        }
-    }
-
-    req.session.productList = productList;
-
-    res.redirect("/showcart");
+    let pool;
+    (async function () {
+        pool = await sql.connect(dbConfig);
+        await cartManager.updateQty(req.session,pool,id,qty)
+    })().then(()=>{
+        res.redirect("/showcart");
+    }).then(() => {
+        pool.close();
+    });
 });
 
 module.exports = router;
