@@ -27,18 +27,19 @@ const addItem = async (session, pool, id, name, price) => {
         return;
     }
     // Update db with our cart information
-    let sql = ` 
+    let sqlAddCart= ` 
     INSERT INTO incart(userId,productId,quantity,price) 
     VALUES(@uid,@pid,1,@price)
     `
     // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
-    psCart.input("uid",sql.Int);
+    psCart.input("uid",sql.VarChar);
     psCart.input("pid",sql.Int);
     psCart.input("price",sql.Decimal);
-    await psCart.prepare(sql);
-    await psCart.execute({uid:getUser(session),pid:id,price:price})
+    await psCart.prepare(sqlAddCart);
+    await psCart.execute({uid:getUser(session), pid:id, price:price})
     console.log("Inserting into db success");
+    return;
 };
 
 // Remove an item from our sessional and db cart
