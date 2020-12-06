@@ -82,7 +82,7 @@ CREATE TABLE orderproduct (
     FOREIGN KEY (orderId) REFERENCES ordersummary(orderId)
         ON UPDATE CASCADE ON DELETE NO ACTION,
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE NO ACTION
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 /* CHANGE TO DDL: incart needs to reference a specific customer as orderId is not known until checkout 
 replaced orderId with userId, a stored sessional variable referencing a customer*/
@@ -95,7 +95,7 @@ CREATE TABLE incart (
     name                VARCHAR(200),
     PRIMARY KEY (userId,productId),
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE warehouse (
@@ -121,7 +121,7 @@ CREATE TABLE productinventory (
     price               DECIMAL(10,2),  
     PRIMARY KEY (productId, warehouseId),   
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+        ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (warehouseId) REFERENCES warehouse(warehouseId)
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
