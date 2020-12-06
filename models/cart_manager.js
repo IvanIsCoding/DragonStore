@@ -156,14 +156,14 @@ const clearCart = async (session,pool) => {
 
 const sqlClearCart = async (session,pool) => {
     // Clear cart in DB
-    sqlClearCart = `
+    cartClearing = `
     DELETE 
     FROM incart 
     WHERE incart.userId = @username 
     `
     const psClearCart = new sql.PreparedStatement(pool);
     psClearCart.input("username",sql.VarChar);
-    await psClearCart.prepare(sqlClearCart);
+    await psClearCart.prepare(cartClearing);
     await psClearCart.execute({username:getUser(session)});
     console.log("Cart cleared successfully!");
     return;
