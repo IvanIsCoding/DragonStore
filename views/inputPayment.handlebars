@@ -1,6 +1,13 @@
 <div class="login-form">
+
+    {{#if !authenticated}}
+    <b>At least Some of the sent PaymentInfo was invalid. Try again</b> 
+    <br>
+    <br>
+    {{/if}}
+
     <h1>Enter payment information</h1>
-    <form name="ShipmentInfo" method=post action="/validPayment">
+    <form name="paymentInfo" method=post action="/validPayment">
         <input type= "text" name="paymentMethod">
         <input type= "text" name="paymentType">
         <input type= "text" name="paymentNumber">

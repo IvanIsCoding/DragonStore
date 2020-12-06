@@ -49,7 +49,10 @@ router.post('/', function(req, res, next) {
     			'customerId': reqCustomerId,
     			'authenticated': true
     		};
-    		res.redirect(`/order`);
+            //res.redirect(`/order`);
+            res.render('inputShipment',{
+                authenticated: true
+            });
 	    } else {
 	    	req.session.invalidPassword = true;
 	    	res.redirect("/checkout");

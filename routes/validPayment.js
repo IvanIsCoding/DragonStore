@@ -3,13 +3,13 @@ const router = express.Router();
 const auth = require('../auth');
 const sql = require('mssql');
 
-router.get('/', checkLogin, function(req, res, next) {
+router.get('/', function(req, res, next) {
     let body = req.body;
     valid = true
     
     if(!valid){
         res.render('inputPayment',{
-            'authenticated': false
+            authenticated: false
         });
     }else{
         paymentInfo = {

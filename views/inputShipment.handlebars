@@ -1,4 +1,11 @@
 <div class="login-form">
+    
+    {{#if !authenticated}}
+    <b>At least Some of the sent ShipmentInfo was invalid. Try again</b> 
+    <br>
+    <br>
+    {{/if}}
+
     <h1>Enter your shipment info</h1>
     <form name="ShipmentInfo" method=post action="/validShipment">
         <input type= "text" name="country">
