@@ -62,7 +62,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
             SELECT 
                 customerId,
                 firstName,
-                lastName,
+                lastName
             FROM customer
             WHERE customerId = @param
         `;
