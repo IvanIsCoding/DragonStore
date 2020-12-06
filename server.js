@@ -61,6 +61,14 @@ app.use(session({
 app.engine('handlebars', exphbs());
 app.set('view engine', 'handlebars');
 
+// Set up user global variable in all endpoints for user in header
+function setUpGlobalVariables(req, res, next) {
+  res.locals.authenticatedUser = req.session.authenticatedUser;
+  next();
+}
+app.all('*', setUpGlobalVariables);
+
+
 // Setting up Express.js routes.
 // These present a "route" on the URL of the site.
 // Eg: http://127.0.0.1/loaddata

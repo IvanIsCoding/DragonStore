@@ -1,6 +1,23 @@
+#header_login_msg {
+    display: block;
+    float: left;
+    padding-left: 12px;
+    position: absolute;
+    font-size: 11pt;
+    color: white;
+}
+
+#navbar #header_login_msg a {
+    text-decoration: underline;
+}
+#navbar #header_login_msg a:hover {
+    background-color: transparent;
+    color: white;
+}
+
 #navbar {
     margin: auto;
-    margin-top: -10px;
+    margin-top: -0px;
     width: 50%;
     background-color: #333;
     overflow: hidden;
@@ -12,11 +29,11 @@
 
 #navbar a {
     text-decoration: none;
-    font-size: 17px;
+    font-size: 16px;
     display: inline-block;
     color: #ffffff;
     text-align: center;
-    padding: 10px 22px;
+    padding: 10px 12px;
     margin-top: -4px;
 }
 
