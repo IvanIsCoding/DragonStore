@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require('../auth');
 const sql = require('mssql');
 
-router.get('/', function(req, res, next) {
+router.post('/', function(req, res, next) {
     let body = req.body;
     valid = true
     
