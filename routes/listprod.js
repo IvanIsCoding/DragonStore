@@ -47,7 +47,7 @@ router.get('/', function(req, res, next) {
             ON product.categoryId = category.categoryId
             WHERE productName LIKE CONCAT('%', @prodParam, '%')
             AND (categoryName = @catParam OR @catParam = 'All')
-            ORDER BY product.qtySold
+            ORDER BY product.qtySold DESC, product.productId ASC;
         `;
 
         let categoryQuery = `
