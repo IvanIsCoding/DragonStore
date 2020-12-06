@@ -27,14 +27,14 @@ const addItem = async (session, pool, id, name, price) => {
     }
     console.log(getUser(session))
     // Update db with our cart information
-    await sqlAddItem(session,pool,id,name,price);
+    await sqlAddItem(session,pool,id,name,price, 1);
 };
 
-const sqlAddItem = async (session, pool, id, name, price) => {
+const sqlAddItem = async (session, pool, id, name, price, qty) => {
     console.log("starting to insert into db");
     let sqlAddCart= ` 
     INSERT INTO incart(userId,productId,quantity,price,name) 
-    VALUES(@username,@pid,1,@price,@name);
+    VALUES(@username,@pid,@qty,@price,@name);
     `
     // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
@@ -43,10 +43,11 @@ const sqlAddItem = async (session, pool, id, name, price) => {
     psCart.input("pid",sql.Int);
     psCart.input("price",sql.Decimal);
     psCart.input("name",sql.VarChar);
+    psCart.input("qty",sql.Int)
     console.log("inputs set");
     await psCart.prepare(sqlAddCart);
     console.log("prepared");
-    await psCart.execute({username:getUser(session), pid:id, price:price, name:name})
+    await psCart.execute({username:getUser(session), pid:id, price:price, name:name, qty: qty})
     console.log("Inserting into db success");
     return;
 };
@@ -125,6 +126,13 @@ const loadCart = async (session,pool) => {
     console.log(dbCart)
     if(!dbCart){ // The database cart is empty
         console.log("No cart in the database: keep session productList")
+        // Still need to update the database with our current session carts however
+        for(let product of session.productList){
+            if(!product){
+                continue
+            }
+            await sqlAddItem(session,pool,product.id,product.name,product.quantity);
+        }
     }
     else if(!session.productList || session.productList.length == 0){ // There is no session cart yet
         console.log("Take cart directly from DB")
@@ -187,7 +195,7 @@ const mergeCart = async (session,dbCart,pool) => {
         }
          // If sessional product is not in DB
         if(!dbCart[sessionCartProduct.id]){ // Add it only to the DB
-            sqlAddItem(session, pool, sessionCartProduct.id, sessionCartProduct.name, sessionCartProduct.price)
+            sqlAddItem(session, pool, sessionCartProduct.id, sessionCartProduct.name, sessionCartProduct.price, sessionCartProduct.quantity)
         }
     }
 };
