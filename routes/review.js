@@ -12,7 +12,7 @@ router.post('/', function(req, res, next) {
     let reviewComment = body.reviewComment;
 
     if(userId === undefined){
-        res.redirect("/login")
+        res.redirect('/login');
         return
     }
 
@@ -37,8 +37,37 @@ router.post('/', function(req, res, next) {
        await psCusid.prepare(sqlCusIdQuery);
        let CidResults = await psCusid.execute({uid: userId});
 
+       if(CidResults.recordset[0] === undefined){
+        res.redirect('/login');
+        return
+    }
        let customerId = CidResults.recordset[0].customerId;
 
+       let sqlPurchaseResRestrictReviewQuery = `
+       SELECT ordersummary.customerId, orderproduct.productId
+       FROM ordersummary JOIN orderproduct ON ordersummary.orderId = orderproduct.orderId
+       WHERE ordersummary.customerId = @cusid AND orderproduct.productId = @ccpid
+        `;
+
+        const psPurchaseResRestrict = new sql.PreparedStatement(pool);
+        psPurchaseResRestrict.input("cusid", sql.Int);
+        psPurchaseResRestrict.input("ccpid", sql.Int);
+        await psPurchaseResRestrict.prepare(sqlPurchaseResRestrictReviewQuery);
+
+        
+        let PurchaserestrictResult = await psPurchaseResRestrict.execute(
+            {
+                cusid: customerId,
+                ccpid: productId
+            }
+        );
+
+        console.log(PurchaserestrictResult.recordset)
+
+        if(PurchaserestrictResult.recordset[0] === undefined){
+            res.redirect('/listprod');
+            return
+        }
 
 
        let sqlRestrictReviewQuery = `
@@ -62,12 +91,9 @@ router.post('/', function(req, res, next) {
                 ccpid: productId
             }
         );
-        console.log("Hi")
-        console.log(restrictResult.recordset)
-        console.log("Hi")
 
         if(restrictResult.recordset[0] !== undefined){
-            res.redirect("/listprod")
+            res.redirect('/listprod');
             return
         }
 
@@ -96,9 +122,10 @@ router.post('/', function(req, res, next) {
                 RC: reviewComment
             }
         );
+
+        res.redirect('/listprod');
     
     })().then(() => {
-        res.redirect('/listprod');
     }).catch((err) => {
         console.dir(err);
         res.render('error', {
