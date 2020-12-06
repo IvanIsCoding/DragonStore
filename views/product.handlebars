@@ -59,7 +59,7 @@
 		{{/if}}
 	</table>
 	
-<form method="post" action="review">
+<form name="ReviewRedirect" method=post action="/review">
 	<table>
 		<tr>
 			<input type="hidden"  name="productId" value= {{product.productId}}>
@@ -75,7 +75,7 @@
 			<td>Comment:</td><td><input type="text" name="reviewComment" size="1000"></td>
 		</tr>
 		<tr>
-			<td> <input type="submit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
+			<td> <input class="submit" type="submit" name="reviewSubmit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
 		</tr>
 	</table>
 </form>
