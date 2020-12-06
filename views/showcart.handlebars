@@ -17,20 +17,19 @@ function handleKeyDown(event, productId) {
 </script>
 {{#if productList}}
 <div>
-	<h1>Your Shopping Cart</h1>
-	                
+	<h1 class="generic-center">Your Shopping Cart</h1>	                
 	<form name="cart1">
-	    <table class="dragon-table">
+	    <table class="dragon-table shopping-cart">
 	        <thead>
 	            <tr>
-	                <th>Product Id</th> <th>Product Name</th> <th>Quantity</th>
-	                <th>Price</th> <th>Subtotal</th> <th> </th> <th> </th>
+	                <th>Product Id</th><th>Product Name</th><th>Quantity</th>
+	                <th>Price</th><th>Subtotal</th><th></th><th></th>
 	            </tr>
 	        </thead>
 	        <tbody>
 	        {{#each productList as | product |}}
 	        	{{#if product}}
-	            <tr>
+	            <tr class = "cart-entry">
 	                <td>{{id}}</td>
 	                <td>{{name}}</td>
 	                <td align="center">
@@ -43,8 +42,8 @@ function handleKeyDown(event, productId) {
 	                </td>
 	                <td align="right">{{formatPrice price}}</td>
 	                <td align="right">{{formatMultiplicationPrice this}}</td>
-	                <td align="right" style="padding-left: 5px;"> 
-	                    <a href={{formatRemovecart id}}> Remove Item From Cart </a> 
+	                <td align="right">
+	                    <a href={{formatRemovecart id}}>Remove</a> 
 	                </td>
 	                <td align="right" style="padding-left: 5px;">
 	                    <button
@@ -71,7 +70,8 @@ function handleKeyDown(event, productId) {
 </div>
 {{else}}
 <div>
-	<h1> Your shopping cart is empty! </h1>
-	<h2><a href="listprod">Continue Shopping</a></h2>
+	<h1 class="generic-center"> Your shopping cart is empty! </h1>
+	<img id="dragon-image" src="images/dragon_flower.svg" alt="Dragon holding a flower" height="300" width="200"/>
+	<h2 class="generic-center"><a href="listprod">Continue Shopping</a></h2>
 </div>
 {{/if}}

@@ -1,6 +1,6 @@
 <div>
-    <h1> Search products: </h1>
-            <form method="get" action="listprod">           
+    <h1 class="search-title">Search products:</h1>
+            <form class="search-title" method="get" action="listprod">           
                 <select size="1" name="categoryName">
                 {{#each categoryList as | category |}}
                     <option>{{category}}</option>
@@ -11,7 +11,7 @@
                 <input type="submit" value="Search"> <input type="reset" value="Clear">
         </form>
     
-    <h2>All Products</h2>
+    <h2 class="search-title">All Products</h2>
 </div>
 
 <table class="dragon-table">

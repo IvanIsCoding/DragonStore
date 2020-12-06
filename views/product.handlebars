@@ -1,47 +1,42 @@
-<div>
+<div class="generic-center">
 	<h2>{{product.productName}}</h2>
-
-	<table>
-
-		<tr>
-			<th>Description</th> 
-			<td>
+	<table class="dragon-table">
+		<tr> 
+			<td class="prod-description">
 			{{#if product.productDesc}}
 				{{product.productDesc}}
 			{{else}}
-				This item has no description. Perhaps a dragon ate it.
+				<h3>This item has no description. Perhaps a dragon ate it.</h3>
 			{{/if}}
 			</td> 
 		</tr>
-
 		<tr>
-			<th>Id</th> <td>{{product.productId}}</td> 
+			<th>Id</th><td>{{product.productId}}</td> 
 		</tr>
 
 		<tr>
-			<th>Price</th> <td>{{formatPrice product.productPrice}}</td>
+			<th>Price</th><td>{{formatPrice product.productPrice}}</td>
 		</tr>
 
 		{{#if product.productImageURL}}
-	    	<img src={{product.productImageURL}}>
+	    	<img class="full-image" src={{product.productImageURL}}>
 		{{/if}}
 
 		{{#if product.displayImage}}
 			<img src={{formatDisplayImageURL product.productId}}>
 		{{/if}}
-
 	</table>
 
 	<table class="dragon-table">
 		<thead>
 			<tr>
-				<th> Rating </th><th>Date</th><th>Comment</th><th>Reviewer</th>
+				<th>Rating</th><th>Date</th><th>Comment</th><th>Reviewer</th>
 			</tr>
 		</thead>
 		{{#if (isReviewsEmpty reviews)}}
 		<tfoot>
 			<tr>
-				<td colspan="4"> No reviews have been made yet. Be the first to do so!</td>
+				<td colspan="4">No reviews have been made yet. Be the first to do so!</td>
 			</tr>
 		</tfoot>
 		{{else}}
@@ -58,7 +53,7 @@
 <form name="ReviewRedirect" method=post action="/review">
 	<table>
 		<tr>
-			<input type="hidden"  name="productId" value= {{product.productId}}>
+			<input type="hidden" name="productId" value= {{product.productId}}>
 		</tr>
 		<select name="reviewRating" >
   			<option value = 1>1 star</option>
@@ -68,20 +63,17 @@
 			<option value= 5 >5 star</option>
 		</select>
         <tr>
-			<td>Comment:</td><td><input type="text" name="reviewComment" size="1000"></td>
+			<td>Comment:</td><td><input type="textarea" name="reviewComment" size="80"></td>
 		</tr>
 		<tr>
-			<td> <input class="submit" type="submit" name="reviewSubmit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
+			<td> <input class="submit" type="submit" name="reviewSubmit" value="Submit"></td><td><input type="reset" value="Reset"></td>
 		</tr>
 	</table>
 </form>
-
 	<h3> 
 		<a href={{formatAddToCartURL product}}> Add to Cart </a> 
 	</h3>
-
 	<h3> 
 		<a href="listprod">Continue Shopping</a> 
 	</h3>
-
 </div>
