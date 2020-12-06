@@ -44,6 +44,7 @@ const addItem = async (session, pool, id, name, price) => {
 
 // Remove an item from our sessional and db cart
 const removeItem = async (session,pool,id) => {
+    productList = session.productList;
     if (productList[id]){
         delete productList[id];
     } 
@@ -64,18 +65,46 @@ const removeItem = async (session,pool,id) => {
     const psRemoveCartItem = new sql.PreparedStatement(pool);
     psRemoveCartItem.input("username",sql.VarChar);
     psRemoveCartItem.input("prod",sql.Int);
-    // error?
-    console.log("Error incoming")
     await psRemoveCartItem.prepare(sqlRemoveItem);
-    console.log("prepared")
     await psRemoveCartItem.execute({username:getUser(session), prod:id})
     console.log("Item removed successfully!")
     return;
 };
 
 // adjust the quantity of our sessional and db cart
-const updateQty = async () => {
+const updateQty = async (session,pool,id,qty) => {
+    // Update quantity if product exists in list
+    // And the quantity is a valid non-negative integer
+    productList = session.productList;
+    if (productList[id] && Number.isInteger(qty) && qty >= 0){
+        productList[id].quantity = qty;
+        if (qty == 0) { // special case: delete item
+            removeItem(session,pool,id)
+            return;
+        }
+    }else{
+        return;
+    }
+    session.productList = productList;
 
+    // If the user is not logged in, we do not update the DB
+    if(!getUser(session)){ // Not logged in
+        console.log("Not logged in");
+        return;
+    }
+    // Update qty in cart DB
+    let updateSQL = `
+    UPDATE incart
+    SET incart.quantity = @qty
+    WHERE userId = @username AND productId = @prod
+    `
+    const psUpdateQty = new sql.PreparedStatement(pool)
+    psUpdateQty.input("username",sql.VarChar);
+    psUpdateQty.input("prod",sql.Int);
+    psUpdateQty.input("qty",sql.Int);
+    await psUpdateQty.prepare(updateSQL);
+    psUpdateQty.execute({username:getUser(session), prod:id, qty:qty})
+    console.log("quantity updated")
 };
 
 // On log in, load our stored cart from the db
