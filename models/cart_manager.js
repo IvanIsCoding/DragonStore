@@ -89,7 +89,8 @@ const updateQty = async (session,pool,id,qty) => {
     if (productList[id] && Number.isInteger(qty) && qty >= 0 && productList[id].quantity != qty){
         productList[id].quantity = qty;
         if (qty == 0) { // special case: delete item
-            removeItem(session,pool,id)
+            session.productList = productList;
+            await removeItem(session,pool,id)
             return;
         }
     }else{
@@ -113,7 +114,7 @@ const updateQty = async (session,pool,id,qty) => {
     psUpdateQty.input("prod",sql.Int);
     psUpdateQty.input("qty",sql.Int);
     await psUpdateQty.prepare(updateSQL);
-    psUpdateQty.execute({username:getUser(session), prod:id, qty:qty})
+    await psUpdateQty.execute({username:getUser(session), prod:id, qty:qty})
     console.log("quantity updated")
 };
 
