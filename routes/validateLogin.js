@@ -9,20 +9,23 @@ router.post('/', function(req, res) {
     // to the database in the validateLogin function.
     let pool;
     (async () => {
-        let authenticatedUser = await validateLogin(req);
+        pool = await sql.connect(dbConfig);
+        let authenticatedUser = await validateLogin(req, pool);
         if (authenticatedUser) {
             req.session.authenticatedUser = authenticatedUser;
-            pool = await sql.connect(dbConfig);
-            cartManager.loadCart(req.session, pool)
+            console.log(authenticatedUser);
+            await cartManager.loadCart(req.session, pool)
             res.redirect("/");
         } else {
             req.session.loginMessage = "Access denied. At least one of the username or password is incorrect.";
             res.redirect("/login");
         }
-     })();
+     })().then( () => {
+         pool.close();
+     });
 });
 
-async function validateLogin(req) {
+async function validateLogin(req, pool) {
     if (!req.body || !req.body.username || !req.body.password) {
         return false;
     }
@@ -31,7 +34,6 @@ async function validateLogin(req) {
     let password = req.body.password;
     let authenticatedUser =  await (async function() {
         try {
-            let pool = await sql.connect(dbConfig);
             let dbPassword = false;
 
             let sqlQuery = `
