@@ -41,7 +41,8 @@ router.get('/', function(req, res, next) {
                 productName,
                 productPrice,
                 categoryName,
-                productImageURL
+                productImageURL,
+                qtySold
             FROM product
             INNER JOIN category
             ON product.categoryId = category.categoryId
