@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
 const moment = require('moment');
+const cartManager = require('../models/cart_manager');
 
 /* Start of Handlebars helpers */
 const formatPrice = (price) => {
@@ -27,10 +28,15 @@ function checkAuthentication(req, res, next) {
 router.get('/', checkAuthentication, function(req, res, next) {
 
     // If the request has the product list, store it.
+
     let productList = false;
     if (req.session.productList && req.session.productList.length > 0) {
         productList = req.session.productList;
     }
+
+    /*
+    let productList = cartManager.getSessionCart(req.session);
+    */
 
     // If the request has the customer id, store it.
     let customerId = false;
@@ -143,19 +149,25 @@ router.get('/', checkAuthentication, function(req, res, next) {
             psProduct.input("pr", sql.Decimal);
             await psProduct.prepare(productSQL);
 
+            // Create statement to update sales
+            let productSalesSQL = `
+            UPDATE product SET qtySold = qtySold + @qty WHERE productId = @pid
+            `
+            const psSales = new sql.PreparedStatement(pool)
+            psSales.input("qty",sql.Int);
+            psSales.input("pid",sql.Int);
+            await psSales.prepare(productSalesSQL);
+
             // Loop through all non null products
             for(let product of realProductList) {
                 // Pick new vals for prepared statement for every real product
-                // Store product results just to make me feel better
                 await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
+                await psSales.execute({qty:product.quantity, pid:product.id})
             }
-
-            // Clear product list
-            req.session.productList = [];
-
+            // Clear cart
+            await cartManager.clearCart(req.session,pool)
             // Forward data to renderer
             return [realProductList, custData, orderId, totalPrice];
-
         }
     })().then(([realProductList, custData, orderId, totalPrice]) => {
         res.render('order', {
