@@ -32,6 +32,18 @@ const formatDisplayImageURL = (productId) => {
 const formatReviewPageURL = (productId) => {
     return `review?id=${productId}`;
 };
+
+const isReviewsEmpty = (reviews) => {
+    if (reviews === undefined || reviews === null) {
+        return true;
+    }
+    try{
+        let answer = Object.keys([reviews]).length === 0;
+        return answer;
+    } catch(err){
+        return true;
+    }
+}
 /* End of Handlebars helpers */
 
 router.get('/', function(req, res, next) {
@@ -87,13 +99,11 @@ router.get('/', function(req, res, next) {
     if(reviewResults.recordset.length > 0 && results.recordset.length > 0){
         let review = reviewResults.recordset;
         let product = results.recordset[0];
-        console.log(review)
         return [product, review];
     }
     else if(results.recordset.length > 0 && reviewResults.recordset.length === 0){
         let product = results.recordset[0];
-        console.log("review empty")
-        return [product, {}];
+        return [product, null];
     }
     else{
         throw "Product not found in the database"
@@ -109,7 +119,8 @@ router.get('/', function(req, res, next) {
                     formatDate,
                     formatAddToCartURL,
                     formatDisplayImageURL,
-                    formatReviewPageURL
+                    formatReviewPageURL,
+                    isReviewsEmpty
                 }
             });
     }).catch((err) => {
