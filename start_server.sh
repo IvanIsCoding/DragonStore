@@ -1,7 +1,6 @@
 #!/bin/bash
-tmux kill-server
-git pull
-tmux my-docker-session
+echo 'Start: Docker-Compose Down'
 docker-compose down
+echo 'Done: Docker-Compose Down'
+echo 'Start: Docker-Compose Up'
 docker-compose up
-tmux detach
