@@ -92,10 +92,7 @@ const validatePaymentMethod = (method) => {
 };
 
 const validateCardNumber = (number) => {
-    if(number.length == 10){
-        return !isNaN(number); // False for strings, true for numbers
-    }
-    return false;
+    return !isNaN(number); // False for strings, true for numbers
 }
 
 const validateExpiryDate = (date) => {

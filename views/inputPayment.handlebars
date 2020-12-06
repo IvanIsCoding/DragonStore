@@ -8,8 +8,22 @@
 
     <h1>Enter payment information</h1>
     <form name="paymentInfo" method=post action="/validPayment">
-        Enter a payment method: <input type= "text" name="paymentMethod"><br>
-        Enter a payment type:<input type= "text" name="paymentType"><br>
+        Enter a payment method: 
+        <br>
+        <select size="1" name="paymentMethod">
+		<option>Amex</option>			
+        <option>Mobile</option> 
+        <option>Google Pay</option> 
+        <option>Apple Pay</option> 
+        <option>Card</option> 
+        </select><br>
+        Enter a payment type:
+        <select size="1" name="paymentType">
+		<option>Visa</option>			
+        <option>Mastercard</option> 
+        <option>American Express</option> 
+        <option>Electronic</option> 
+        </select><br>
         Enter a payment number:<input type= "text" name="paymentNumber"><br>
         Enter a expiry date:<input type= "date" name="expiryDate"><br>
         <input class="submit" type="submit" name="submitPayment" value="Move to payment info">
