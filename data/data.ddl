@@ -68,7 +68,7 @@ CREATE TABLE product (
     productImage        VARBINARY(MAX),
     productDesc         VARCHAR(8000),
     categoryId          INT,
-    qtySold              INT DEFAULT 0,
+    qtySold             INT DEFAULT 0,
     PRIMARY KEY (productId),
     FOREIGN KEY (categoryId) REFERENCES category(categoryId)
 );
