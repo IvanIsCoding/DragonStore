@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const sql = require('mssql');
-const validation = require('mssql')
+const validation = require('../models/validation');
 
 
 router.get('/', function(req, res, next) {
