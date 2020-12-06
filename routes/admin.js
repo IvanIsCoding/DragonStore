@@ -50,7 +50,7 @@ router.get('/', checkLogin, function(req, res, next) {
 
         return results.recordset;
     })().then((salesData) => {
-        res.render('admin', {
+        res.render('admin/index', {
             title: 'DBs and Dragons Admin Page',
             salesData: salesData,
             pageActive: {'order': true},
@@ -65,6 +65,31 @@ router.get('/', checkLogin, function(req, res, next) {
             title: 'DBs and Dragons Admin Page',
             errorMessage: `Error, contact your admin: ${err}`,
         });
+    }).finally(() => {
+        pool.close();
+    });
+
+});
+
+router.get('/manageprod', checkLogin, function(req, res, next) {
+    res.render('admin/manageprod', {
+        title: 'DBs and Dragons Admin Page',
+    });
+});
+
+router.post('/insertprod', checkLogin, function(req, res, next) {
+	
+    let pool;
+    (async function() {
+        pool = await sql.connect(dbConfig);
+        
+    })().then(() => {
+        res.render('error', {
+            title: 'DBs and Dragons Admin Page',
+            errorMessage: `Page not implemented yet`,
+        });
+    }).catch((err) => {
+
     }).finally(() => {
         pool.close();
     });
