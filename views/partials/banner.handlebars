@@ -1,6 +1,16 @@
-<link rel="stylesheet" href="/css/style.css">
 <div id="navbar">
     <img src="/images/banner.png" alt="DBs & Dragons">
+    
+	{{#if authenticatedUser}}
+    <span id="header_login_msg">
+		Hi, {{authenticatedUser}}! <a href="/logout">Log out</a>
+    </span>
+    {{else}}
+    <span id="header_login_msg">
+		<a href="/login">Log In</a>
+        <a href="/createuser">Register</a>
+    </span>
+	{{/if}}
     
     {{#if pageActive.home}}
         <a href="/" class="active">Home</a>
@@ -25,5 +35,4 @@
     {{else}}
         <a href="/listorder">Orders</a>
     {{/if}}
-
 </div>

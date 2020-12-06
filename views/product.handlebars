@@ -1,7 +1,3 @@
-<title>{{title}}</title>
-
-{{> banner }}
-
 <div>
 	<h2>{{product.productName}}</h2>
 
@@ -39,7 +35,7 @@
 	<table class="dragon-table">
 		<thead>
 			<tr>
-				<th> Rating </th> <th>Date</th> <th>Comment</th> <th>Reviewer</th>
+				<th> Rating </th><th>Date</th><th>Comment</th><th>Reviewer</th>
 			</tr>
 		</thead>
 		{{#if (isReviewsEmpty reviews)}}
@@ -52,7 +48,7 @@
 		<tbody>
 		{{#each reviews as | productReview |}}
 		<tr>
-			<td>{{reviewRating}}</td> <td>{{formatDate reviewDate}}</td> <td>{{reviewComment}}</td> <td>{{firstName}}</td>
+			<td>{{reviewRating}}</td><td>{{formatDate reviewDate}}</td><td>{{reviewComment}}</td><td>{{firstName}}</td>
 		</tr>
 		{{/each}}
 		</tbody>
