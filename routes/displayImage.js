@@ -28,7 +28,7 @@ router.get('/', function(req, res, next) {
                 .query(sqlQuery);
 
             if (result.recordset.length === 0) {
-                console.log("No image record");
+                console.dir("No image record");
                 res.end();
                 return;
             } else {

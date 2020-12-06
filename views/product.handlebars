@@ -8,7 +8,7 @@
 	<table>
 
 		<tr>
-			<th>Descrption</th> 
+			<th>Description</th> 
 			<td>
 			{{#if product.productDesc}}
 				{{product.productDesc}}
@@ -42,6 +42,13 @@
 				<th> Rating </th> <th>Date</th> <th>Comment</th> <th>Reviewer</th>
 			</tr>
 		</thead>
+		{{#if (isReviewsEmpty reviews)}}
+		<tfoot>
+			<tr>
+				<td colspan="4"> No reviews have been made yet. Be the first to do so!</td>
+			</tr>
+		</tfoot>
+		{{else}}
 		<tbody>
 		{{#each reviews as | productReview |}}
 		<tr>
@@ -49,6 +56,7 @@
 		</tr>
 		{{/each}}
 		</tbody>
+		{{/if}}
 	</table>
 	<!--
 	<h3> 
