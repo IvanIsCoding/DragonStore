@@ -167,11 +167,63 @@ const getUser = (session) =>{
 const mergeCart = (session,dbCart,pool) => {
 
 }
+    sessionProducts = session.productList;
+    for(let cartProduct of dbCart){
+        if (!cartProduct) { // Null product
+            continue;
+        }
+         // If the DB entry is not in the sessional var
+        if(!sessionProducts[cartProduct.id]){
+            sessionProducts[cartProduct.id] = cartProduct
+        }else{ // DB entry is in sessional var: update quantity to sessional version
+            updateQty(session,pool,cartProduct.id,cartProduct.qty)
+        }
+    }
+    for(let sessionCartProduct of sessionProducts){
+        if (!sessionCartProduct) { // Null product
+            continue;
+        }
+         // If sessional product is not in DB
+        if(!dbCart[sessionCartProduct.id]){ // Add it only to the DB
+            sqlAddItem(session,pool,sessionCartProduct.id,sessionCartProduct.name,sessionCartProduct.price)
+        }
+    }
+};
 
 // Get the cart as stored in the database
 const getDBCart = (session, pool) => {
-    return;
-}
+    username = getUser(session)
+    // Query DB for an existing cart
+    sqlCartQuery = `
+    SELECT incart.productId AS id, quantity, price, name
+    FROM incart
+    WHERE userId = @username
+    `
+    const psCart = new sql.PreparedStatement(pool);
+    psCart.input("username",sql.VarChar);
+    await psCart.prepare(sqlCartQuery);
+    results = await psCart.execute({username:username})
+    let dbRecords = results.recordset
+
+    if(dbRecords.length === 0){ // If there are no values returned from cart
+        return
+    }
+    // Create the product list as last saved
+    dbProductList = []
+    for(let product of dbRecords){
+        if (!product) {
+            continue;
+        }
+        id = dbRecords.productId
+        dbProductList[id] = {
+            "id": product.id,
+            "name": product.name,
+            "price": product.price,
+            "quantity": product.quantity
+        }
+    }
+    return dbProductList;
+};
 
 module.exports = {
     addItem,
