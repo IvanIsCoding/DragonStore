@@ -9,7 +9,7 @@ router.get('/', function(req, res, next) {
     
     if(!valid){
         res.render('inputPayment',{
-            authenticated: false
+            invalidPayment: true
         });
     }else{
         paymentInfo = {
@@ -20,7 +20,7 @@ router.get('/', function(req, res, next) {
         }
         // Save payment information in a sessional variable (this is a horrible idea)
         req.session.paymentInfo = paymentInfo; 
-        //res.redirect('/order')
+        res.redirect('/order')
     }
 
 });
