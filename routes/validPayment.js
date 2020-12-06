@@ -24,7 +24,7 @@ router.post('/', function(req, res, next) {
         console.log("bad date")
         valid=false;
     }
-    if(!req.session.shipmentinfo){ // got here without getting shipment info first?
+    if(!req.session.shipmentInfo){ // got here without getting shipment info first?
         valid=false;
     }
     
