@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS ordersummary;
 DROP TABLE IF EXISTS paymentmethod;
 DROP TABLE IF EXISTS customer;
 
-
+/* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE customer (
     customerId          INT IDENTITY,
     firstName           VARCHAR(40),
@@ -22,8 +22,8 @@ CREATE TABLE customer (
     state               VARCHAR(20),
     postalCode          VARCHAR(20),
     country             VARCHAR(40),
-    userid              VARCHAR(20),
-    password            VARCHAR(30),
+    userid              VARCHAR(20) NOT NULL,
+    password            VARCHAR(30) NOT NULL,
     PRIMARY KEY (customerId)
 );
 
@@ -82,17 +82,18 @@ CREATE TABLE orderproduct (
     FOREIGN KEY (productId) REFERENCES product(productId)
         ON UPDATE CASCADE ON DELETE NO ACTION
 );
-
+/* CHANGE TO DDL: incart needs to reference a specific customer as orderId is not known until checkout 
+replaced orderId with userId, a stored sessional variable referencing a customer*/
+/* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE incart (
-    orderId             INT,
+    userId              VARCHAR(20),
     productId           INT,
     quantity            INT,
-    price               DECIMAL(10,2),  
-    PRIMARY KEY (orderId, productId),
-    FOREIGN KEY (orderId) REFERENCES ordersummary(orderId)
-        ON UPDATE CASCADE ON DELETE NO ACTION,
+    price               DECIMAL(10,2), 
+    name                VARCHAR(200),
+    PRIMARY KEY (userId,productId),
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE NO ACTION
+        ON UPDATE CASCADE ON DELETE NO ACTION,
 );
 
 CREATE TABLE warehouse (
@@ -261,10 +262,6 @@ SELECT @orderId = @@IDENTITY
 INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId, 5, 4, 21.35)
 INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId, 19, 2, 81)
 INSERT INTO orderproduct (orderId, productId, quantity, price) VALUES (@orderId, 20, 3, 10);
-
--- Add sample reviews
-INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (2, '2019-10-15 10:25:55', 1, 1, 'This game is taking too long to release')    
-INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (2, '2019-10-15 10:25:55', 2, 1, 'Still waiting for the game')
 
 -- New SQL DDL for lab 8
 
