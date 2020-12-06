@@ -1,0 +1,34 @@
+<title>{{title}}</title>
+
+{{> banner }}
+
+<h1>Enter the product info:</h1>
+
+<form method="post" action="/admin/updateprod">
+	<table>
+        <tr>
+			<td>Product Id:</td><td><input type="number" name="pid" size="1"></td>
+		</tr>
+		<tr>
+			<td>Product name:</td><td><input type="text" name="Name" size="200"></td>
+		</tr>
+		<tr>
+			<td>product Price:</td><td><input type="number" name="price" size="12" step=".01"></td>
+		</tr>
+        <tr>
+			<td>product Image URL:</td><td><input type="text" name="url" size="100"></td>
+		</tr>
+        <tr>
+			<td>product Image:</td><td><input type="text" name="Image" size="10000"></td>
+		</tr>
+        <tr>
+			<td>product Desc:</td><td><input type="text" name="Desc" size="8000"></td>
+		</tr>
+        <tr>
+			<td>category Id:</td><td><input type="number" name="cid" size="1"></td>
+		</tr>
+		<tr>
+			<td> <input type="submit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
+		</tr>
+	</table>
+</form>
