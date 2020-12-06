@@ -17,7 +17,7 @@
 <table class="dragon-table">
     <thead>
         <tr>
-            <th></th><th></th><th>Name</th><th>Genre</th><th>Price</th>
+            <th></th><th>Product Image</th><th>Product Name</th><th>Category</th><th>Price</th><th>Number sold</th>
         </tr>
     </thead>
     <tbody>
@@ -36,6 +36,7 @@
             </td> 
             <td>{{result.categoryName}}</td>
     		<td>{{formatPrice result.productPrice}}</td>
+            <td>{{result.qtySold}}</td>
     	</tr>
     {{/each}}
     </tbody>

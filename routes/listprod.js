@@ -41,12 +41,14 @@ router.get('/', function(req, res, next) {
                 productName,
                 productPrice,
                 categoryName,
-                productImageURL
+                productImageURL,
+                qtySold
             FROM product
             INNER JOIN category
             ON product.categoryId = category.categoryId
             WHERE productName LIKE CONCAT('%', @prodParam, '%')
             AND (categoryName = @catParam OR @catParam = 'All')
+            ORDER BY product.qtySold DESC, product.productId ASC;
         `;
 
         let categoryQuery = `
