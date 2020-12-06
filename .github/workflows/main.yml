@@ -1,0 +1,28 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy Website
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy-to-digital-ocean-droplet:
+    runs-on: ubuntu-latest
+    name: Deploy Website
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@master
+      - name: Pull from GitHub
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          script: cd cosc304_lab7 && ./start_tmux.sh
