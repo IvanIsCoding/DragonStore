@@ -10,7 +10,11 @@ router.post('/', function(req, res, next) {
     let productId = body.productId;
     let userId = req.session.authenticatedUser;
     let reviewComment = body.reviewComment;
-    console.log(body);
+
+    if(userId === undefined){
+        res.redirect('/login');
+        return
+    }
 
     let pool;
     (async function() {
@@ -33,8 +37,68 @@ router.post('/', function(req, res, next) {
        await psCusid.prepare(sqlCusIdQuery);
        let CidResults = await psCusid.execute({uid: userId});
 
+       if(CidResults.recordset[0] === undefined){
+        res.redirect('/login');
+        return
+    }
        let customerId = CidResults.recordset[0].customerId;
-       console.log(customerId)
+
+       let sqlPurchaseResRestrictReviewQuery = `
+       SELECT ordersummary.customerId, orderproduct.productId
+       FROM ordersummary JOIN orderproduct ON ordersummary.orderId = orderproduct.orderId
+       WHERE ordersummary.customerId = @cusid AND orderproduct.productId = @ccpid
+        `;
+
+        const psPurchaseResRestrict = new sql.PreparedStatement(pool);
+        psPurchaseResRestrict.input("cusid", sql.Int);
+        psPurchaseResRestrict.input("ccpid", sql.Int);
+        await psPurchaseResRestrict.prepare(sqlPurchaseResRestrictReviewQuery);
+
+        
+        let PurchaserestrictResult = await psPurchaseResRestrict.execute(
+            {
+                cusid: customerId,
+                ccpid: productId
+            }
+        );
+
+        console.log(PurchaserestrictResult.recordset)
+
+        if(PurchaserestrictResult.recordset[0] === undefined){
+            res.redirect('/listprod');
+            return
+        }
+
+
+       let sqlRestrictReviewQuery = `
+            SELECT ordersummary.customerId, COUNT(reviewId) AS numReview
+            FROM ordersummary JOIN orderproduct ON ordersummary.orderId = orderproduct.orderId
+                JOIN review ON ordersummary.customerId = review.customerId
+            WHERE ordersummary.customerId = @cusid AND orderproduct.productId = @ccpid
+            GROUP BY ordersummary.customerId
+        `;
+
+
+        const psRestrict = new sql.PreparedStatement(pool);
+        psRestrict.input("cusid", sql.Int);
+        psRestrict.input("ccpid", sql.Int);
+        await psRestrict.prepare(sqlRestrictReviewQuery);
+
+        
+        let restrictResult = await psRestrict.execute(
+            {
+                cusid: customerId,
+                ccpid: productId
+            }
+        );
+
+        if(restrictResult.recordset[0] !== undefined){
+            res.redirect('/listprod');
+            return
+        }
+
+
+
 
         let sqlInsertReviewQuery = `
         INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (@RR, @RD, @cid, @pid, @RC)
@@ -58,9 +122,10 @@ router.post('/', function(req, res, next) {
                 RC: reviewComment
             }
         );
+
+        res.redirect('/listprod');
     
     })().then(() => {
-        res.redirect('/listprod');
     }).catch((err) => {
         console.dir(err);
         res.render('error', {
