@@ -69,7 +69,6 @@ router.get('/', function(req, res, next) {
             WHERE productId = @param
         `;
 
-
         let sqlReviewQuery = `
         SELECT
             reviewId,
@@ -84,6 +83,7 @@ router.get('/', function(req, res, next) {
         ON review.customerId = customer.customerId
         WHERE productId = @pid
         `;
+
     const ps = new sql.PreparedStatement(pool);
     ps.input('param', sql.Int);
     await ps.prepare(sqlQuery);
