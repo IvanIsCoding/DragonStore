@@ -29,22 +29,48 @@ const addItem = async (session, pool, id, name, price) => {
     // Update db with our cart information
     let sqlAddCart= ` 
     INSERT INTO incart(userId,productId,quantity,price) 
-    VALUES(@uid,@pid,1,@price)
+    VALUES(@username,@pid,1,@price);
     `
     // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
-    psCart.input("uid",sql.VarChar);
+    psCart.input("username",sql.VarChar);
     psCart.input("pid",sql.Int);
     psCart.input("price",sql.Decimal);
     await psCart.prepare(sqlAddCart);
-    await psCart.execute({uid:getUser(session), pid:id, price:price})
+    await psCart.execute({username:getUser(session), pid:id, price:price})
     console.log("Inserting into db success");
     return;
 };
 
 // Remove an item from our sessional and db cart
-const removeItem = async () => {
+const removeItem = async (session,pool,id) => {
+    if (productList[id]){
+        delete productList[id];
+    } 
+    session.productList = productList;
+    // If the user is not logged in, we do not update the DB
+    if(!getUser(session)){ // Not logged in
+        console.log("Not logged in");
+        return;
+    }
 
+    // Update db deleting item
+    let sqlRemoveItem= ` 
+        DELETE 
+        FROM incart 
+        WHERE incart.userId = @username 
+        AND incart.productId = @prod;
+    `
+    const psRemoveCartItem = new sql.PreparedStatement(pool);
+    psRemoveCartItem.input("username",sql.VarChar);
+    psRemoveCartItem.input("prod",sql.Int);
+    // error?
+    console.log("Error incoming")
+    await psRemoveCartItem.prepare(sqlRemoveItem);
+    console.log("prepared")
+    await psRemoveCartItem.execute({username:getUser(session), prod:id})
+    console.log("Item removed successfully!")
+    return;
 };
 
 // adjust the quantity of our sessional and db cart
@@ -61,7 +87,7 @@ const loadCart = async (session,pool) => {
     if(!dbCart){ // The database cart is empty
         console.log("No cart in the database: keep session productList")
     }
-    else if(!session.productList){ // There is no session cart yet
+    else if(!session.productList || session.productList.length == 0){ // There is no session cart yet
         console.log("Take cart directly from DB")
         session.productList = getDBCart();
     }else{ // Both carts have products: merge
