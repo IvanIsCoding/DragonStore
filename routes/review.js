@@ -3,85 +3,69 @@ const router = express.Router();
 const auth = require('../auth');
 const sql = require('mssql');
 
-router.get('/', function(req, res, next) {
-    
-    let productId = req.query.id;
+router.post('/', function(req, res, next) {
+
+    let body = req.body;
+    let reviewRating = body.reviewRating;
+    let productId = body.productId;
+    let userId = req.session.authenticatedUser;
+    let reviewComment = body.reviewComment;
+    console.log(body);
 
     let pool;
     (async function() {
         pool = await sql.connect(dbConfig);
 
-        let sqlQuery = `
-            SELECT
-                productId,
-                productName,
-                productPrice,
-                productImageURL,
-                CASE 
-                    WHEN productImage IS NOT NULL THEN 1
-                    ELSE NULL
-                END AS displayImage
-            FROM product
-            WHERE productId = @param
+        /*
+        let sqlRestrictReviewQuery = `
+        SELECT COUNT(reviewId)
+        FROM review JOIN customer ON review.customerId = customer.customerId
+        WHERE customer.userId = @cid, productId = @ccpid
+        `;
+        */
+       let sqlCusIdQuery = `
+       SELECT customerId 
+       FROM customer
+       WHERE userId = @uid
+       `;
+       const psCusid = new sql.PreparedStatement(pool);
+       psCusid.input("uid", sql.VarChar);
+       await psCusid.prepare(sqlCusIdQuery);
+       let CidResults = await psCusid.execute({uid: userId});
+
+       let customerId = CidResults.recordset[0].customerId;
+       console.log(customerId)
+
+        let sqlInsertReviewQuery = `
+        INSERT INTO review (reviewRating, reviewDate, customerId, productId, reviewComment) VALUES (@RR, @RD, @cid, @pid, @RC)
         `;
 
+        const psReview = new sql.PreparedStatement(pool);
+        psReview.input("RR", sql.Int);
+        psReview.input("RD", sql.DateTime);
+        psReview.input("cid", sql.Int);
+        psReview.input("pid", sql.Int);
+        psReview.input("RC", sql.VarChar);
 
-        let sqlReviewQuery = `
-        SELECT
-            reviewId,
-            reviewRating,
-            reviewDate,
-            customerId,
-            productId,
-            reviewComment
-        FROM review
-        WHERE productId = @pid
-    `;
-    const ps = new sql.PreparedStatement(pool);
-    ps.input('param', sql.Int);
-    await ps.prepare(sqlQuery);
+        await psReview.prepare(sqlInsertReviewQuery);
 
-    let results = await ps.execute({param: productId});
-
-    const psReview = new sql.PreparedStatement(pool);
-    psReview.input('pid', sql.Int);
-    await psReview.prepare(sqlReviewQuery);
-
-    let reviewResults = await psReview.execute({param: productId});
-
-    if(reviewResults.recordset.length > 0){
-        let review = reviewResults.recordset;
-        return review;
-    }
-    else if(reviewResults.recordset.length === 0){
-        throw "No review"
-    }
-
-    if(results.recordset.length > 0) { // product exists in database
-        let product = results.recordset[0];
-        return product;
-    } else {
-         throw "Product not found in the database"
-    }
-
-
-    })().then(([product, reviews]) => {
-        res.render('product', {
-            title: 'DBs and Dragons Product Page',
-            product: product,
-            reviews: reviews,
-            helpers: {
-                formatPrice,
-                formatAddToCartURL,
-                formatDisplayImageURL,
-                formatReviewPageURL
+        await psReview.execute(
+            {
+                RR: reviewRating,
+                RD: new Date(),
+                cid: customerId,
+                pid: productId,
+                RC: reviewComment
             }
-        });
+        );
+    
+    })().then(() => {
+        res.redirect('/listprod');
     }).catch((err) => {
         console.dir(err);
         res.render('error', {
-            title: 'DBs and Dragons Product Page',
-            errorMessage: `Error, contact your admin: ${err}`,
+            title: 'DBs and Dragons Grocery Order List',
+            errorMessage: `${err}`,
         });
     }).finally(() => {
         pool.close();
