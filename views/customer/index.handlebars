@@ -1,11 +1,11 @@
 <div>
-	<h3>Customer Profile</h3>	
-	<h4><a href="customer/order"> View your orders</a></h4>
-	<table class="dragon-table noround">
+	<h3 class="generic-center">Customer Profile</h3>	
+	<h4 class="generic-center"><a href="customer/order"> View your orders</a></h4>
+	<table class="dragon-table cust-table">
 		<tbody class="noround">
 		{{#each userData as | data |}}
 			<tr>
-				<th style="background-color: #009879;color: white;"> {{keyname}}</th> 
+				<th> {{keyname}}</th> 
 				<td>{{keyval}}</td>
 			</tr>
 		{{/each}}
