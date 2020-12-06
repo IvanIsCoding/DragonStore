@@ -22,25 +22,30 @@ const addItem = async (session, pool, id, name, price) => {
     session.productList = productList;
     // If the user is not logged in, we do not update the DB
     if(!getUser(session)){ // Not logged in
-        console.log("Not logged in");
+        console.log("add item not logged in")
         return;
     }
+    console.log(getUser(session))
     // Update db with our cart information
-    sqlAddItem(session,pool,id,name,price);
+    await sqlAddItem(session,pool,id,name,price);
 };
 
 const sqlAddItem = async (session, pool, id, name, price) => {
+    console.log("starting to insert into db");
     let sqlAddCart= ` 
     INSERT INTO incart(userId,productId,quantity,price,name) 
     VALUES(@username,@pid,1,@price,@name);
     `
     // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
+    console.log("ps created");
     psCart.input("username",sql.VarChar);
     psCart.input("pid",sql.Int);
     psCart.input("price",sql.Decimal);
     psCart.input("name",sql.VarChar);
+    console.log("inputs set");
     await psCart.prepare(sqlAddCart);
+    console.log("prepared");
     await psCart.execute({username:getUser(session), pid:id, price:price, name:name})
     console.log("Inserting into db success");
     return;
@@ -55,7 +60,7 @@ const removeItem = async (session,pool,id) => {
     session.productList = productList;
     // If the user is not logged in, we do not update the DB
     if(!getUser(session)){ // Not logged in
-        console.log("Not logged in");
+        console.log("remove item not logged in")
         return;
     }
 
@@ -93,7 +98,7 @@ const updateQty = async (session,pool,id,qty) => {
 
     // If the user is not logged in, we do not update the DB
     if(!getUser(session)){ // Not logged in
-        console.log("Not logged in");
+        console.log("update quantity not logged in")
         return;
     }
     // Update qty in cart DB
@@ -116,16 +121,18 @@ const loadCart = async (session,pool) => {
     if(!getUser(session)){ // This should never happen, but just in case
         return;
     }
-    dbCart = getDBCart(); 
+    dbCart = await getDBCart(session,pool)
+    console.log(dbCart)
     if(!dbCart){ // The database cart is empty
         console.log("No cart in the database: keep session productList")
     }
     else if(!session.productList || session.productList.length == 0){ // There is no session cart yet
         console.log("Take cart directly from DB")
-        session.productList = getDBCart();
+        session.productList = dbCart;
     }else{ // Both carts have products: merge
+        console.log(session.productList.length)
         console.log("Merging two carts")
-        mergeCart(session,dbCart,pool)
+        await mergeCart(session,dbCart,pool)
     }
 };
 
@@ -133,9 +140,13 @@ const loadCart = async (session,pool) => {
 const clearCart = async (session,pool) => {
     session.productList = [];
     if(!getUser(session)){ // Not logged in
-        console.log("Not logged in");
+        console.log("clear not logged in")
         return;
     }
+    await sqlClearCart(session,pool)
+};
+
+const sqlClearCart = async (session,pool) => {
     // Clear cart in DB
     sqlClearCart = `
     DELETE 
@@ -148,11 +159,7 @@ const clearCart = async (session,pool) => {
     await psClearCart.execute({username:getUser(session)});
     console.log("Cart cleared successfully!");
     return;
-};
-
-const getSessionCart = (session) => {
-    return session.productList;
-};
+}
 
 // Check if this user is logged in
 const getUser = (session) =>{
@@ -161,7 +168,7 @@ const getUser = (session) =>{
 };
 
 // Merge the cart as stored in the db with the sessional cart
-const mergeCart = (session,dbCart,pool) => {
+const mergeCart = async (session,dbCart,pool) => {
     sessionProducts = session.productList;
     for(let cartProduct of dbCart){
         if (!cartProduct) { // Null product
@@ -180,14 +187,19 @@ const mergeCart = (session,dbCart,pool) => {
         }
          // If sessional product is not in DB
         if(!dbCart[sessionCartProduct.id]){ // Add it only to the DB
-            sqlAddItem(session,pool,sessionCartProduct.id,sessionCartProduct.name,sessionCartProduct.price)
+            sqlAddItem(session, pool, sessionCartProduct.id, sessionCartProduct.name, sessionCartProduct.price)
         }
     }
 };
 
 // Get the cart as stored in the database
-const getDBCart = (session, pool) => {
+const getDBCart = async (session, pool) => {
+    if(!getUser(session)){
+        console.log("")
+        return;
+    }
     username = getUser(session)
+    console.log(username)
     // Query DB for an existing cart
     sqlCartQuery = `
     SELECT incart.productId AS id, quantity, price, name
@@ -209,8 +221,8 @@ const getDBCart = (session, pool) => {
         if (!product) {
             continue;
         }
-        id = dbRecords.productId
-        dbProductList[id] = {
+        console.log(product)
+        dbProductList[product.id] = {
             "id": product.id,
             "name": product.name,
             "price": product.price,
