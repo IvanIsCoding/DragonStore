@@ -134,6 +134,23 @@ const loadCart = async (session,pool) => {
 // On checkout, clear sessional cart and db cart for this customer
 const clearCart = async (session,pool) => {
 
+    session.productList = [];
+    if(!getUser(session)){ // Not logged in
+        console.log("Not logged in");
+        return;
+    }
+    // Clear cart in DB
+    sqlClearCart = `
+    DELETE 
+    FROM incart 
+    WHERE incart.userId = @username 
+    `
+    const psClearCart = new sql.PreparedStatement(pool);
+    psClearCart.input("username",sql.VarChar);
+    await psClearCart.prepare(sqlClearCart);
+    await psClearCart.execute({username:getUser(session)});
+    console.log("Cart cleared successfully!");
+    return;
 };
 
 const getSessionCart = (session) => {
