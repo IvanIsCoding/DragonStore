@@ -38,10 +38,19 @@ const validateEmail = (email) => {
     return !!matchedValue;
 };
 
-const validatePostalCode = (postalCode) => {
+const validateUSZipCode = (zipCode) => {
+    const matchedValue = postalCode.match(/^\d{5}(?:[-\s]\d{4})?$/);
+    return !!matchedValue;
+};
+
+const validateCanadianPostalCode = (postalCode) => {
     const matchedValue = postalCode.match(/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/);
-    return matchedValue;
-}
+    return !!matchedValue;
+};
+
+const validatePostalCode = (postalCode) => {
+    return validateCanadianPostalCode(postalCode) || validateUSZipCode(postalCode);
+};
 
 const validateCountry = (country) => {
     return ["Canada", "United States"].includes(country);
