@@ -82,14 +82,48 @@ router.post('/insertprod', checkLogin, function(req, res, next) {
     let pool;
     (async function() {
         pool = await sql.connect(dbConfig);
+        let productName = req.body.Name;
+        let productprice = req.body.price;
+        let productImageURL = req.body.url;
+        //let productImage = req.query.Image;
+        let productDesc = req.body.Desc;
+        let categoryId = req.body.Id;
+
+        let sqlInsertproductQuery = `
+        INSERT INTO product (productName, productPrice, productImageURL, productDesc, categoryId) 
+        VALUE (@PN, @PP, @piu, @PD, @caid)
+        `;
+
+        const psinsertProd = new sql.PreparedStatement(pool);
+        psinsertProd.input("PN", sql.VarChar);
+        psinsertProd.input("PP", sql.Decimal);
+        psinsertProd.input("piu", sql.VarChar);
+        //psinsertProd.input("PI", sql.VarChar);
+        psinsertProd.input("PD", sql.VarChar);
+        psinsertProd.input("caid", sql.Int);
+
+        await psinsertProd.prepare(sqlInsertproductQuery);
         
+        await psinsertProd.execute(
+            {
+                PN: productName,
+                PP: productprice,
+                piu: productImageURL,
+                //Pi: productImage,
+                PD: productDesc,
+                caid: categoryId
+            }
+        );
+
     })().then(() => {
-        res.render('error', {
+        res.render('insertprod', {
             title: 'DBs and Dragons Admin Page',
-            errorMessage: `Page not implemented yet`,
         });
     }).catch((err) => {
-
+        res.render('error', {
+            title: 'DBs and Dragons Product List',
+            errorMessage: `Error, contact your admin: ${err}`,
+        });
     }).finally(() => {
         pool.close();
     });
