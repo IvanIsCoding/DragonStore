@@ -89,7 +89,8 @@ CREATE TABLE incart (
     userId              VARCHAR(20),
     productId           INT,
     quantity            INT,
-    price               DECIMAL(10,2),  
+    price               DECIMAL(10,2), 
+    name                VARCHAR(200),
     PRIMARY KEY (userId,productId),
     FOREIGN KEY (productId) REFERENCES product(productId)
         ON UPDATE CASCADE ON DELETE NO ACTION,

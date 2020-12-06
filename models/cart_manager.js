@@ -12,6 +12,7 @@ const addItem = async (session, pool, id, name, price) => {
 
     if (productList[id]){
         productList[id].quantity = productList[id].quantity + 1;
+        updateQty(session,pool,id,productList[id].quantity+1);
     } else {
         productList[id] = {
             "id": id,
@@ -27,17 +28,22 @@ const addItem = async (session, pool, id, name, price) => {
         return;
     }
     // Update db with our cart information
+    sqlAddItem(session,pool,id,name,price);
+};
+
+const sqlAddItem = async (session, pool, id, name, price) => {
     let sqlAddCart= ` 
-    INSERT INTO incart(userId,productId,quantity,price) 
-    VALUES(@username,@pid,1,@price);
+    INSERT INTO incart(userId,productId,quantity,price,name) 
+    VALUES(@username,@pid,1,@price,@name);
     `
     // Quantity is fixed at 1 for new additions
     const psCart = new sql.PreparedStatement(pool);
     psCart.input("username",sql.VarChar);
     psCart.input("pid",sql.Int);
     psCart.input("price",sql.Decimal);
+    psCart.input("name",sql.VarChar);
     await psCart.prepare(sqlAddCart);
-    await psCart.execute({username:getUser(session), pid:id, price:price})
+    await psCart.execute({username:getUser(session), pid:id, price:price, name:name})
     console.log("Inserting into db success");
     return;
 };
@@ -76,7 +82,7 @@ const updateQty = async (session,pool,id,qty) => {
     // Update quantity if product exists in list
     // And the quantity is a valid non-negative integer
     productList = session.productList;
-    if (productList[id] && Number.isInteger(qty) && qty >= 0){
+    if (productList[id] && Number.isInteger(qty) && qty >= 0 && productList[id].quantity != qty){
         productList[id].quantity = qty;
         if (qty == 0) { // special case: delete item
             removeItem(session,pool,id)
