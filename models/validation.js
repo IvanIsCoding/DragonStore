@@ -101,7 +101,12 @@ const validatePaymentMethod = (method) => {
 };
 
 const validateCardNumber = (number) => {
-    return !isNaN(number); // False for strings, true for numbers
+    try {
+        const matchedValue = number.match(/^[0-9]+$/); // string contains only digits
+        return !!matchedValue;
+    } catch (err) {
+        return false;
+    }
 }
 
 const validateExpiryDate = (date) => {
