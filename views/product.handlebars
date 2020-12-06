@@ -58,12 +58,27 @@
 		</tbody>
 		{{/if}}
 	</table>
-	<!--
-	<h3> 
-		<a href={{formatReviewPageURL product.productId}}> Review </a> 
-		</h3>
-	}}
-	-->
+	
+<form method="post" action="review">
+	<table>
+		<tr>
+			<input type="hidden"  name="productId" value= {{product.productId}}>
+		</tr>
+		<select name="reviewRating" >
+  			<option value = 1>1 star</option>
+  			<option value= 2 >2 star</option>
+  			<option value= 3 >3 star</option>
+  			<option value= 4 >4 star</option>
+			<option value= 5 >5 star</option>
+		</select>
+        <tr>
+			<td>Comment:</td><td><input type="text" name="reviewComment" size="1000"></td>
+		</tr>
+		<tr>
+			<td> <input type="submit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
+		</tr>
+	</table>
+</form>
 
 	<h3> 
 		<a href={{formatAddToCartURL product}}> Add to Cart </a> 

@@ -8,7 +8,7 @@ router.post('/', function(req, res, next) {
     let body = req.body;
     let reviewRating = body.reviewRating;
     let productId = body.productId;
-    let userId = body.userId;
+    let userId = session.customerAuthentication;
     let reviewComment = body.reviewComment;
     console.log(body);
 
@@ -33,7 +33,7 @@ router.post('/', function(req, res, next) {
        await psCusid.prepare(sqlCusIdQuery);
        let CidResults = await psCusid.execute({uid: userId});
 
-       let customerId = results.recordset[0];
+       let customerId = CidResults.recordset[0].customerId;
        console.log(customerId)
 
         let sqlInsertReviewQuery = `
@@ -49,7 +49,7 @@ router.post('/', function(req, res, next) {
 
         await psReview.prepare(sqlInsertReviewQuery);
 
-        let reviewResults = await psReview.execute(
+        await psReview.execute(
             {
                 RR: reviewRating,
                 RD: new Date(),
@@ -60,9 +60,13 @@ router.post('/', function(req, res, next) {
         );
     
     })().then(() => {
-        res.redirect(`/product?id=${productId}`);
+        res.redirect('/listprod');
     }).catch((err) => {
-
+        console.dir(err);
+        res.render('error', {
+            title: 'DBs and Dragons Grocery Order List',
+            errorMessage: `${err}`,
+        });
     }).finally(() => {
         pool.close();
     });
