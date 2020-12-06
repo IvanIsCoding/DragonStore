@@ -59,6 +59,7 @@ CREATE TABLE category (
     PRIMARY KEY (categoryId)
 );
 
+/* Change to product: add qty sold field, and give it a default value*/
 CREATE TABLE product (
     productId           INT IDENTITY,
     productName         VARCHAR(200),
@@ -67,6 +68,7 @@ CREATE TABLE product (
     productImage        VARBINARY(MAX),
     productDesc         VARCHAR(8000),
     categoryId          INT,
+    qtySold             INT DEFAULT 0,
     PRIMARY KEY (productId),
     FOREIGN KEY (categoryId) REFERENCES category(categoryId)
 );

@@ -149,10 +149,20 @@ router.get('/', checkAuthentication, function(req, res, next) {
             psProduct.input("pr", sql.Decimal);
             await psProduct.prepare(productSQL);
 
+            // Create statement to update sales
+            let productSalesSQL = `
+            UPDATE product SET qtySold = qtySold + @qty WHERE productId = @pid
+            `
+            const psSales = new sql.PreparedStatement(pool)
+            psSales.input("qty",sql.Int);
+            psSales.input("pid",sql.Int);
+            await psSales.prepare(productSalesSQL);
+
             // Loop through all non null products
             for(let product of realProductList) {
                 // Pick new vals for prepared statement for every real product
                 await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
+                await psSales.execute({qty:product.quantity, pid:product.id})
             }
             // Clear cart
             await cartManager.clearCart(req.session,pool)
