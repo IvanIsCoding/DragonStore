@@ -62,12 +62,7 @@ router.get('/', checkAuthentication, function(req, res, next) {
             SELECT 
                 customerId,
                 firstName,
-                lastName,
-                address,
-                city,
-                state,
-                postalCode,
-                country
+                lastName
             FROM customer
             WHERE customerId = @param
         `;
@@ -120,15 +115,16 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 
             await psSummary.prepare(orderSummarySQL);
             // Execute prepared statement, get the data
+            shipmentInfo = req.session.shipmentInfo
             let summaryResults = await psSummary.execute(
                 {
                     OD: new Date(), 
-                    SA: custData[0].address, 
-                    SCI: custData[0].city, 
-                    SS: custData[0].state, 
-                    SP: custData[0].postalCode, 
-                    SCO: custData[0].country, 
-                    CI: custData[0].customerId, 
+                    SA: shipmentInfo.address, 
+                    SCI: shipmentInfo.city, 
+                    SS: shipmentInfo.state, 
+                    SP: shipmentInfo.postalCode, 
+                    SCO: shipmentInfo.country, 
+                    CI: customerId, 
                     TA: totalPrice
                 }
             );
@@ -164,8 +160,10 @@ router.get('/', checkAuthentication, function(req, res, next) {
                 await psProduct.execute({oid: orderId, pid: product.id, qty: product.quantity, pr: product.price});
                 await psSales.execute({qty:product.quantity, pid:product.id})
             }
-            // Clear cart
+            // Clear cart and other sessional vars
             await cartManager.clearCart(req.session,pool)
+            delete req.session.shipmentInfo
+            delete req.session.paymentInfo
             // Forward data to renderer
             return [realProductList, custData, orderId, totalPrice];
         }

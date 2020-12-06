@@ -1,0 +1,40 @@
+<div class="login-form">
+    
+    {{#if invalidShipmentInfo}}
+    <b>At least Some of the sent ShipmentInfo was invalid. Try again</b> 
+    <br>
+    <br>
+    {{/if}}
+
+    <h1>Enter your shipment info</h1>
+    <form name="ShipmentInfo" method=post action="/validShipment">
+        Select your country: 
+        <select size="1" name="country">
+		<option>Canada</option>
+        <option>United States</option>
+        </select><br>
+        Enter your postalCode: <input type= "text" name="postalCode"><br>
+        <select size="1" name="state">
+					<option>Alberta</option>
+					<option> British Columbia</option> 
+					<option> Manitoba</option>
+					<option> New Brunswick</option>
+					<option> Newfoundland and Labrador</option> 
+					<option> Nova Scotia</option>
+					<option> Ontario</option>
+					<option> Prince Edward Island</option> 
+					<option> Québec</option>
+					<option> Saskatchewan</option>
+					<option> Northwest Territories</option> 
+					<option> Nunavut</option>
+					<option> Yukon</option>
+					<option>California</option>
+					<option>Oregon</option>
+					<option>Washington</option>
+					<option>Other</option>
+        </select>
+        Enter your city: <input type= "text" name="city"><br>
+        Enter your address: <input type= "text" name="address"><br>
+        <input class="submit" type="submit" name="submitShipment" value="Move to payment info">
+    </form>
+</div>

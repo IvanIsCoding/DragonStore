@@ -25,6 +25,8 @@ let removeCart = require('./routes/removecart');
 let customerAuthentication = require('./routes/customerauthentication');
 let createUser = require('./routes/createuser');
 let review = require('./routes/review')
+let validPayment = require('./routes/validPayment')
+let validShipment = require('./routes/validShipment')
 
 const app = express();
 
@@ -95,6 +97,8 @@ app.use('/removecart', removeCart);
 app.use('/customerauthentication', customerAuthentication);
 app.use('/createuser', createUser);
 app.use('/review',review);
+app.use('/validPayment',validPayment);
+app.use('/validShipment',validShipment);
 
 // Setting up where static assets should
 // be served from.

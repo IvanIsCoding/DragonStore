@@ -5,7 +5,7 @@ const sql = require('mssql');
 router.use(express.urlencoded({extended: true}));
 
 router.post('/', function(req, res, next) {
-    res.setHeader('Content-Type', 'text/html');
+    //res.setHeader('Content-Type', 'text/html');
 
     let body = req.body;
     let reqCustomerId = false;
@@ -49,7 +49,10 @@ router.post('/', function(req, res, next) {
     			'customerId': reqCustomerId,
     			'authenticated': true
     		};
-    		res.redirect(`/order`);
+            //res.redirect(`/order`);
+            res.render('inputShipment',{
+                invalidShipmentInfo: false
+            });
 	    } else {
 	    	req.session.invalidPassword = true;
 	    	res.redirect("/checkout");
