@@ -9,9 +9,7 @@ const addItem = async (session, pool, id, name, price) => {
     } else {
         productList = session.productList;
     }
-
     if (productList[id]){
-        productList[id].quantity = productList[id].quantity + 1;
         updateQty(session,pool,id,productList[id].quantity+1);
     } else {
         productList[id] = {
@@ -133,7 +131,6 @@ const loadCart = async (session,pool) => {
 
 // On checkout, clear sessional cart and db cart for this customer
 const clearCart = async (session,pool) => {
-
     session.productList = [];
     if(!getUser(session)){ // Not logged in
         console.log("Not logged in");
@@ -165,8 +162,6 @@ const getUser = (session) =>{
 
 // Merge the cart as stored in the db with the sessional cart
 const mergeCart = (session,dbCart,pool) => {
-
-}
     sessionProducts = session.productList;
     for(let cartProduct of dbCart){
         if (!cartProduct) { // Null product
