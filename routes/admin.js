@@ -91,7 +91,7 @@ router.post('/insertprod', checkLogin, function(req, res, next) {
 
         let sqlInsertproductQuery = `
         INSERT INTO product (productName, productPrice, productImageURL, productDesc, categoryId) 
-        VALUE (@PN, @PP, @piu, @PD, @caid)
+        VALUES (@PN, @PP, @piu, @PD, @caid)
         `;
 
         const psinsertProd = new sql.PreparedStatement(pool);
@@ -116,7 +116,7 @@ router.post('/insertprod', checkLogin, function(req, res, next) {
         );
 
     })().then(() => {
-        res.render('insertprod', {
+        res.render('admin/insertprod', {
             title: 'DBs and Dragons Admin Page',
         });
     }).catch((err) => {
