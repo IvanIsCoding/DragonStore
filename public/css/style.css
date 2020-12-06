@@ -1,3 +1,8 @@
+
+body {
+    background-color: #0e140e;
+}
+
 #header_login_msg {
     display: block;
     float: left;
@@ -7,6 +12,13 @@
     color: white;
 }
 
+
+h1, h2, h3, h4 {
+    font-weight: normal;
+}
+
+
+
 #navbar #header_login_msg a {
     text-decoration: underline;
 }
@@ -15,14 +27,35 @@
     color: white;
 }
 
+
+.dragon-body {
+    min-height: 728px;
+    font-family: Georgia, serif;
+    color: white;
+    margin-top: 120px;
+    padding-top: 5px;
+}
+
+
+.dragon-body, #navbar {
+    width: 728px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #464f46;
+}
+
+
 #navbar {
-    margin: auto;
-    margin-top: -0px;
-    width: 50%;
     background-color: #333;
     overflow: hidden;
-    width: 728px;
     text-align: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    margin: auto;
+    /* HACKY: USED TO LINE-UP AT THE TOP */
+    top: -7px;
+
 }
 
 /* Links within navbar*/
@@ -65,86 +98,91 @@
     font-size: 0.9em;
     font-family: sans-serif;
     margin: 25px 0;
-    min-width: 400px;
+    text-shadow: 1px 1px black;
+    max-width: 725px;
 }
 
 .dragon-table thead tr {
-    background-color: #009879;
+    background-color: #333;
     color: #ffffff;
     text-align: left;
 }
-
+/* Table Header */
 .dragon-table th, .dragon-table td {
-    padding: 12px 15px;
-}
-
-.dragon-table th:first-child {
-    border-top-left-radius: 25px;
-}
-
-.dragon-table th:last-child {
-    border-top-right-radius: 25px;
-}
-
-.dragon-table.noround th:first-child {
-    border-top-left-radius: 0px;
-}
-
-.dragon-table.noround th:last-child {
-    border-top-right-radius: 0px;
-}
-
-.dragon-table .noround th:first-child {
-    border-top-left-radius: 0px;
-}
-
-.dragon-table .noround th:last-child {
-    border-top-right-radius: 0px;
+    padding: 1px 15px 0px 15px;
 }
 
 .dragon-table tbody tr {
     border-bottom: 1px solid #dddddd;
 }
 
-.dragon-table tbody tr a {
-    background: #009879;
-    border-color: white;
-    border-style: solid;
-    border-width: 2px;
-    color: white;
-    padding: 5px;
-    text-decoration: none;
+.dragon-table tbody tr a:hover {
+    background-color: darkslategray;
 }
 
-.dragon-table tbody tr button {
-    background: #009879;
+/* styling for "ADD TO CART" button */
+.dragon-table tbody tr a {
+    background:#585858;
     border-color: white;
     border-style: solid;
-    border-width: 2px;
+    border-width: 1.25px;
+    border-radius: 25px;
     color: white;
     padding: 5px;
     text-decoration: none;
 }
 
 .dragon-table tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+    background-color: #333;
 }
 
 .dragon-table tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
+    border-bottom: 2px solid black;
 }
 
-.dragon-table tbody tr.active-row {
-    color: #009879;
-    font-weight: bold;
+.dragon-table tbody tr:hover {
+    background-color: #202020;
 }
 
+/* Styling for product name column in listprod */
 .dragon-prodname {
     background: none !important;
     border-color: none !important;
     border-style: 0px !important;
     border-width: 0px !important;
-    color: black !important;
+    color: white !important;
     padding: 0px !important;
     text-decoration: none !important;
+}
+/* Styling for product thumnails in listprod */
+.dragon-thumbnail {
+    margin-top: 2px;
+    max-width: 150px;
+}
+
+.login-form {
+    margin: auto;
+    width: 30%;
+}
+
+.login-form input {
+    background-color: #78a183;
+    margin-top: -5px;
+}
+
+.login-form .submit {
+    background:#585858;
+    border-color: white;
+    border-style: solid;
+    border-width: 1.25px;
+    border-radius: 25px;
+    color: white;
+    padding: 5px;
+    text-decoration: none;
+    margin-left: 80px;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: #fc3003;
 }

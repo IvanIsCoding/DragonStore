@@ -1,11 +1,6 @@
-<title>{{title}}</title>
-
-{{> banner }}
-
 <div>
     <h1> Search products: </h1>
-            <form method="get" action="listprod">
-            
+            <form method="get" action="listprod">           
                 <select size="1" name="categoryName">
                 {{#each categoryList as | category |}}
                     <option>{{category}}</option>
@@ -22,23 +17,22 @@
 <table class="dragon-table">
     <thead>
         <tr>
-            <th> </th> <th>Product Image</th> <th>Product Name</th> <th> Category </th> <th>Price</th> <th>Number sold</th>
+            <th></th><th>Product Image</th><th>Product Name</th><th>Category</th><th>Price</th><th>Number sold</th>
         </tr>
     </thead>
     <tbody>
     {{#each productList as | product |}}
     	<tr>
     		<td>
-    			<a href={{formatAddToCartURL result}}> Add to Cart </a>
+    			<a href={{formatAddToCartURL result}}>Add</a>
     		</td>
             <td>
-                <img>
                 {{#if result.productImageURL}}
-                <img src={{result.productImageURL}} width="100" height="110">
+                    <img class="dragon-thumbnail" src={{result.productImageURL}}>
                 {{/if}}
             </td>
     		<td>
-                <a class="dragon-prodname" href={{formatProductPageURL result.productId}}> <b> {{result.productName}} </b> </a>
+                <a class="dragon-prodname" href={{formatProductPageURL result.productId}}>{{result.productName}}</a>
             </td> 
             <td>{{result.categoryName}}</td>
     		<td>{{formatPrice result.productPrice}}</td>
