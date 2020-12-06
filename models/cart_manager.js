@@ -127,11 +127,13 @@ const loadCart = async (session,pool) => {
     if(!dbCart){ // The database cart is empty
         console.log("No cart in the database: keep session productList")
         // Still need to update the database with our current session carts however
-        for(let product of session.productList){
-            if(!product){
-                continue
+        if (session.productList){ // Ensure it is iterable
+            for(let product of session.productList){
+                if(!product){
+                    continue
+                }
+                await sqlAddItem(session,pool,product.id,product.name,product.quantity);
             }
-            await sqlAddItem(session,pool,product.id,product.name,product.quantity);
         }
     }
     else if(!session.productList || session.productList.length == 0){ // There is no session cart yet
