@@ -139,7 +139,8 @@ CREATE TABLE review (
     FOREIGN KEY (customerId) REFERENCES customer(customerId)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE CASCADE
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT Only_One_Review UNIQUE(customerId, productId)  
 );
 
 CREATE TABLE dragonadmin (
