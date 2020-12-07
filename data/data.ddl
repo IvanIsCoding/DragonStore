@@ -25,7 +25,8 @@ CREATE TABLE customer (
     country             VARCHAR(40),
     userid              VARCHAR(20) NOT NULL,
     password            VARCHAR(30) NOT NULL,
-    PRIMARY KEY (customerId)
+    PRIMARY KEY (customerId),
+    CONSTRAINT Only_One_UserId UNIQUE(userid)   
 );
 
 CREATE TABLE paymentmethod (
