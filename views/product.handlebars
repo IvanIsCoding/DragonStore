@@ -11,10 +11,15 @@
 		<span class="price-or-id">{{product.productId}}</span>
 	</span>
 	<br>
+			{{#if product.displayImage}}
+		<img src={{formatDisplayImageURL product.productId}}>
+	{{else}}
 	{{#if product.productImageURL}}
 	<div id="prod-image-buttons">
 		<img class="full-image" src={{product.productImageURL}}>
+		
 		{{/if}}
+				{{/if}}
 		<br>
 			<a class = "button" href={{formatAddToCartURL product}}>Add to Cart</a>
 			<a class = "button" href="listprod">Continue Shopping</a>
@@ -26,9 +31,7 @@
 		<h3 class="generic-left">This item has no description. Perhaps a dragon ate it.</h3>
 		{{/if}}
 		</p>
-		{{#if product.displayImage}}
-		<img src={{formatDisplayImageURL product.productId}}>
-		{{/if}}
+
 
 
 	<div id="review-entry">
