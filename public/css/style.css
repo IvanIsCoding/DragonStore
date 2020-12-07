@@ -1,9 +1,25 @@
 :root {
-    --main-bg-colour: #0e140e;
+    --main-bg-colour: #222222;
+    --alt-bg-colour: #333;
+    --alt2-bg-colour: #202020;
+    --header-bg-colour: #1a1a1a;
+    --main-surface-colour: #121212;
+    --primary-colour: #BB86FC;
+    --primary-variant-colour: #3700B3;
+    --secondary-colour: #03DAC6;
+    --error-colour: #CF6679;
+    --on-background-colour: #FFFFFF;
+    --on-surface-colour: #FFFFFF;
+    --on-primary-colour: #000000;
+    --on-secondary-colour: #000000;
+    --on-error-colour: #000000;
+    --text-shadow-colour: #000000;
+    --button-bg-colour: #585858;
+    --button-hover-colour: #03DAC6;
 }
 
 body {
-    background-color: #0e140e;
+    background-color: var(--main-bg-colour);
 }
 
 #banner {
@@ -11,7 +27,7 @@ body {
 }
 
 a:visited, a{
-    color: white;
+    color: var(--on-surface-colour);
 }
 
 #header_login_msg {
@@ -20,12 +36,12 @@ a:visited, a{
     padding-left: 12px;
     position: absolute;
     font-size: 11pt;
-    color: white;
+    color: var(--on-background-colour);
 }
 
 h1, h2, h3, h4 {
     font-weight: normal;
-    text-shadow: 2px 2px #202020;
+    text-shadow: 2px 2px var(--text-shadow-colour);
 }
 
 
@@ -34,13 +50,13 @@ h1, h2, h3, h4 {
 }
 #navbar #header_login_msg a:hover {
     background-color: transparent;
-    color: white;
+    color: var(--on-background-colour);
 }
 
 .dragon-body {
     min-height: 700px;
     font-family: Georgia, serif;
-    color: white;
+    color: var(--on-background-colour);
     margin-top: 150px;
     padding-top: 5px;
 }
@@ -50,12 +66,12 @@ h1, h2, h3, h4 {
     width: 900px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #464f46;
+    background-color: var(--main-bg-colour);
 }
 
 
 #navbar {
-    background-color: #333;
+    background-color: var(--alt-bg-colour);
     overflow: hidden;
     text-align: center;
     position: fixed;
@@ -73,7 +89,7 @@ h1, h2, h3, h4 {
     text-decoration: none;
     font-size: 16px;
     display: inline-block;
-    color: #ffffff;
+    color: var(--on-surface-colour);
     text-align: center;
     padding: 10px 12px;
     margin-top: -4px;
@@ -88,26 +104,27 @@ h1, h2, h3, h4 {
 /* Hover over links in navbar */
 
 #navbar a:hover {
-    background-color: #ddd;
+    background-color: var(--on-surface-colour);
     color: black;
 }
 
 /* Styling of link to current active page */
 
 .active {
-    background-color: green;
-    color: white;
+    background-color: var(--primary-variant-colour);
+    color: var(--on-surface-colour);
 }
 
 /* -------- TABLE STYLING -------- */
 
 .dragon-table {
+    background-color: var(--alt-bg-colour);
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     font-size: 0.9em;
     font-family: sans-serif;
     margin: 25px 0;
-    text-shadow: 1px 1px black;
+    text-shadow: 1px 1px var(--text-shadow-colour);
     max-width: 900px;
     left: 0;
     right: 0;
@@ -115,8 +132,8 @@ h1, h2, h3, h4 {
 }
 
 .dragon-table thead tr {
-    background-color: #333;
-    color: #ffffff;
+    background-color: var(--header-bg-colour);
+    color: var(--on-background-colour);
     text-align: left;
 }
 /* Table Header */
@@ -125,27 +142,26 @@ h1, h2, h3, h4 {
 }
 
 .dragon-table tbody tr {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid var(--on-surface-colour);
 }
 
 .dragon-table tbody tr a:hover {
-    background-color: darkslategray;
+    background-color: var(--button-hover-colour);
 }
 
 /* styling for "ADD TO CART" button */
 .dragon-table tbody tr a, .button {
-    background:#585858;
+    background: var(--button-bg-colour);
     border-color: white;
     border-style: solid;
     border-width: 1.25px;
-    border-radius: 25px;
     color: white;
     padding: 5px;
     text-decoration: none;
 }
 
 .dragon-table tbody tr:nth-of-type(even) {
-    background-color: #333;
+    background-color: var(--alt2-bg-colour);
 }
 
 .dragon-table tbody tr:last-of-type {
@@ -162,7 +178,7 @@ h1, h2, h3, h4 {
     border-color: none !important;
     border-style: 0px !important;
     border-width: 0px !important;
-    color: white !important;
+    color: var(--on-surface-colour) !important;
     padding: 0px !important;
     text-decoration: none !important;
 }
@@ -173,7 +189,7 @@ h1, h2, h3, h4 {
 }
 
 .full-image {
-    box-shadow: 5px 6px #333;
+    box-shadow: 5px 6px var(--alt-bg-colour);
     margin-bottom: 10px;
 }
 
@@ -183,17 +199,17 @@ h1, h2, h3, h4 {
 }
 
 .login-form input {
-    background-color: #78a183;
+    background-color: var(--alt-bg-colour);
+    color: var(--on-background-colour);
     margin-top: -5px;
 }
 
 .login-form .submit {
-    background:#585858;
-    border-color: white;
+    background: var(--alt-bg-colour);
+    border-color: var(--on-background-colour);
     border-style: solid;
     border-width: 1.25px;
-    border-radius: 25px;
-    color: white;
+    color: var(--on-background-colour);
     padding: 5px;
     text-decoration: none;
     margin-left: 80px;
@@ -201,7 +217,7 @@ h1, h2, h3, h4 {
 }
 
 .error-message {
-    color: #fc3003;
+    color: var(--error-colour);
 }
 
 .generic-center {
@@ -214,13 +230,15 @@ h1, h2, h3, h4 {
 }
 
 .search-title {
-    color:white;
+    color: var(--on-background-colour);
     margin-left: 25px;
     margin-top: 25px;
 }
 
 .prod-description {
-    background-color: #202020;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    background-color: var(--main-bg-colour);
     text-align: center;
 }
 
@@ -235,3 +253,59 @@ h1, h2, h3, h4 {
     filter: drop-shadow( 3px 5px 2px rgba(0, 0, 0, .7));
     /* Similar syntax to box-shadow */
   }
+
+#prod-id-table {
+    display: inline-block;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    text-shadow: 1px 1px var(--text-shadow-colour);
+    max-width: 900px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#prod-id-table td {
+    padding: 0px 20px 0px 20px;
+}
+
+#prod-title {
+    display: inline-block;
+}
+
+.price-or-id {
+    font-weight: bold;
+    padding: 0px 1px 0px 1px;
+}
+
+.inline-title {
+    font-style: italic;
+}
+
+.text-value-pair {
+    padding: 0px 10px 0px 10px;
+}
+
+#no-review-text {
+    display: block;
+    float: left;
+    font-style: italic;
+    margin: 10px 10px 10px 2px;
+}
+
+.prod-page-link {
+    padding: 0px 50px 0px 50px;
+}
+
+#prod-image-buttons a {
+    display: inline-block;
+    margin: 5px -5px 0px 20px;
+}
+
+#review-entry .button {
+    float: left;
+    margin: 10px 20px 0px 0px;
+}
+

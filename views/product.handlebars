@@ -1,79 +1,85 @@
 <div class="generic-center">
-	<h2>{{product.productName}}</h2>
-	<table class="dragon-table">
-		<tr> 
-			<td class="prod-description">
+	<h2 id="prod-title">{{product.productName}}</h2>
+	<br>
+	<span class="text-value-pair">
+		<span class="inline-title">Price:</span>
+		<span class="price-or-id">{{formatPrice product.productPrice}}</span>
+	</span>
+	<br>
+	<span class="text-value-pair">
+		<span class="inline-title">ProductID:</span>
+		<span class="price-or-id">{{product.productId}}</span>
+	</span>
+	<br>
+	{{#if product.productImageURL}}
+	<div id="prod-image-buttons">
+		<img class="full-image" src={{product.productImageURL}}>
+		{{/if}}
+		<br>
+			<a class = "button" href={{formatAddToCartURL product}}>Add to Cart</a>
+			<a class = "button" href="listprod">Continue Shopping</a>
+			</div>
+		<p class="prod-description">
 			{{#if product.productDesc}}
-				{{product.productDesc}}
+			{{product.productDesc}}
 			{{else}}
-				<h3>This item has no description. Perhaps a dragon ate it.</h3>
-			{{/if}}
-			</td> 
-		</tr>
-		<tr>
-			<th>Id</th><td>{{product.productId}}</td> 
-		</tr>
-
-		<tr>
-			<th>Price</th><td>{{formatPrice product.productPrice}}</td>
-		</tr>
-
-		{{#if product.productImageURL}}
-	    	<img class="full-image" src={{product.productImageURL}}>
+		<h3 class="generic-left">This item has no description. Perhaps a dragon ate it.</h3>
 		{{/if}}
-
+		</p>
 		{{#if product.displayImage}}
-			<img src={{formatDisplayImageURL product.productId}}>
+		<img src={{formatDisplayImageURL product.productId}}>
 		{{/if}}
-	</table>
 
-	<table class="dragon-table">
-		<thead>
-			<tr>
-				<th>Rating</th><th>Date</th><th>Comment</th><th>Reviewer</th>
-			</tr>
-		</thead>
+
+	<div id="review-entry">
 		{{#if (isReviewsEmpty reviews)}}
-		<tfoot>
-			<tr>
-				<td colspan="4">No reviews have been made yet. Be the first to do so!</td>
-			</tr>
-		</tfoot>
+		<span id="no-review-text">No reviews have been made yet. Be the first to do so!</span>
 		{{else}}
-		<tbody>
-		{{#each reviews as | productReview |}}
-		<tr>
-			<td>{{reviewRating}}</td><td>{{formatDate reviewDate}}</td><td>{{reviewComment}}</td><td>{{firstName}}</td>
-		</tr>
-		{{/each}}
-		</tbody>
-		{{/if}}
-	</table>
-	
-<form name="ReviewRedirect" method=post action="/review">
-	<table>
-		<tr>
-			<input type="hidden" name="productId" value= {{product.productId}}>
-		</tr>
-		<select name="reviewRating" >
-  			<option value = 1>1 star</option>
-  			<option value= 2 >2 star</option>
-  			<option value= 3 >3 star</option>
-  			<option value= 4 >4 star</option>
-			<option value= 5 >5 star</option>
-		</select>
-        <tr>
-			<td>Comment:</td><td><input type="textarea" name="reviewComment" size="80"></td>
-		</tr>
-		<tr>
-			<td> <input class="submit" type="submit" name="reviewSubmit" value="Submit"></td><td><input type="reset" value="Reset"></td>
-		</tr>
-	</table>
-</form>
-	<h3> 
-		<a href={{formatAddToCartURL product}}> Add to Cart </a> 
-	</h3>
-	<h3> 
-		<a href="listprod">Continue Shopping</a> 
-	</h3>
+		<table class="dragon-table">
+			<thead>
+				<tr>
+					<th>Rating</th>
+					<th>Date</th>
+					<th>Comment</th>
+					<th>Reviewer</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#each reviews as | productReview |}}
+				<tr>
+					<td>{{reviewRating}}</td>
+					<td>{{formatDate reviewDate}}</td>
+					<td>{{reviewComment}}</td>
+					<td>{{firstName}}</td>
+				</tr>
+				{{/each}}
+			</tbody>
+			{{/if}}
+
+
+			<form name="ReviewRedirect" method=post action="/review">
+				<table>
+					<tr>
+						<input type="hidden" name="productId" value={{product.productId}}>
+					</tr>
+
+					<tr>
+						<td>Comment:</td>
+						<td><input type="textarea" name="reviewComment" size="80"></td>
+						<td>
+						<select name="reviewRating">
+						<option value=1>1 star</option>
+						<option value=2>2 star</option>
+						<option value=3>3 star</option>
+						<option value=4>4 star</option>
+						<option value=5>5 star</option>
+						</td>
+					</select>
+					</tr>
+					
+				</table>
+						<input class="button" type="submit" name="reviewSubmit" value="Submit">
+						<input class="button" type="reset" value="Reset">
+			</form>
+	</div>
 </div>
