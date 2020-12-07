@@ -4,7 +4,11 @@
 
 {{#if username}}
 <h2 align="center"><a href="/customer">Customer Info</a></h2>
+
+{{#if isAdmin}}
 <h2 align="center"><a href="/admin">Administrators</a></h2>
+{{/if}}
+
 <h2 align="center"><a href="/logout">Log out</a></h2>
 {{else}}
 <h2 align="center"><a href="/login">Login</a></h2>

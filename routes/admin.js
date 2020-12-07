@@ -22,7 +22,7 @@ const formatDate = (orderDate) => {
 
 // Authenticates that user has logged in previously
 function checkLogin(req, res, next) {
-    if (req.session.authenticatedUser) {
+    if (req.session.authenticatedUser && req.session.isAdmin) {
         next();
     }
     else { // Your password is invalid, send you back to checkout

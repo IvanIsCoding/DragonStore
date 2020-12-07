@@ -5,6 +5,7 @@ const cartManager = require('../models/cart_manager');
 router.get('/', function(req, res, next) {
     console.log("loging out")
     req.session.authenticatedUser = false;
+    req.session.isAdmin = false;
     req.session.productList = []
     res.redirect("/");
 });
