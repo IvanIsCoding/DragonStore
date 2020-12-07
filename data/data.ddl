@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS ordersummary;
 DROP TABLE IF EXISTS paymentmethod;
 DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS dragonadmin;
 
 /* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE customer (
@@ -140,6 +141,11 @@ CREATE TABLE review (
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+/* TO DO: Add foreign key constrain for UserId?*/
+CREATE TABLE dragonadmin (
+    userId          VARCHAR(20) NOT NULL,
+    PRIMARY KEY (userId)
+);
 
 INSERT INTO category(categoryName) VALUES ('Action');
 INSERT INTO category(categoryName) VALUES ('RPG');
@@ -228,6 +234,8 @@ INSERT INTO customer (firstName, lastName, email, phonenum, address, city, state
 INSERT INTO customer (firstName, lastName, email, phonenum, address, city, state, postalCode, country, userid, password) VALUES ('Candace', 'Cole', 'cole@charity.org', '333-444-5555', '333 Central Crescent', 'Chicago', 'IL', '33333', 'United States', 'candace' , 'password');
 INSERT INTO customer (firstName, lastName, email, phonenum, address, city, state, postalCode, country, userid, password) VALUES ('Darren', 'Doe', 'oe@doe.com', '250-807-2222', '444 Dover Lane', 'Kelowna', 'BC', 'V1V 2X9', 'Canada', 'darren' , 'pw');
 INSERT INTO customer (firstName, lastName, email, phonenum, address, city, state, postalCode, country, userid, password) VALUES ('Elizabeth', 'Elliott', 'engel@uiowa.edu', '555-666-7777', '555 Everwood Street', 'Iowa City', 'IA', '52241', 'United States', 'beth' , 'test');
+
+INSERT INTO dragonadmin (userid) VALUES ('bobby');
 
 -- Order 1 can be shipped as have enough inventory
 DECLARE @orderId int

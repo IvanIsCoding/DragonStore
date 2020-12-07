@@ -13,7 +13,7 @@ router.post('/', function(req, res) {
         let authenticatedUser = await validateLogin(req, pool);
         if (authenticatedUser) {
             req.session.authenticatedUser = authenticatedUser;
-            console.log(authenticatedUser);
+            req.session.isAdmin = await checkAdminUser(req, pool);
             await cartManager.loadCart(req.session, pool)
             res.redirect("/");
         } else {
@@ -65,6 +65,40 @@ async function validateLogin(req, pool) {
     })();
 
     return authenticatedUser;
+}
+
+async function checkAdminUser(req, pool) {
+    try {
+
+        if (!req.body || !req.body.username || !req.body.password) {
+            return false;
+        }
+
+        let username = req.body.username;
+
+        let sqlQuery = `
+            SELECT 
+                dragonadmin.userid AS userid
+            FROM customer
+            INNER JOIN dragonadmin
+            ON customer.userid = dragonadmin.userid
+            WHERE customer.userid = @param;
+        `;
+
+        const ps = new sql.PreparedStatement(pool);
+        ps.input('param', sql.VarChar(20));
+        await ps.prepare(sqlQuery);
+
+        let results = await ps.execute({param: username});
+        if(results.recordset.length > 0) { // userid exists in database
+            return true;
+        }
+
+        return false;
+    } catch (err) {
+        console.dir(err);
+        return false;
+    }
 }
 
 module.exports = router;
