@@ -1,31 +1,27 @@
-<title>{{title}}</title>
-
-{{> banner }}
-
 <h1>Enter the product info:</h1>
 
 <form method="post" action="/admin/insertprod">
-	<table>
-		<tr>
-			<td>Product name:</td><td><input type="text" name="Name" size="200"></td>
+		<table>
+		<tbody><tr>
+			<td>Name:</td><td><input type="text" class="text-input" name="Name" size="50"></td>
 		</tr>
 		<tr>
-			<td>product Price:</td><td><input type="number" name="price" size="12" step=".01"></td>
+			<td>Price:</td><td><input type="number" class="number-input" name="price" step=".01"></td>
 		</tr>
         <tr>
-			<td>product Image URL:</td><td><input type="text" name="url" size="100"></td>
+			<td>Image URL:</td><td><input type="text" class="text-input" name="url" size="50"></td>
 		</tr>
         <tr>
-			<td>product Image:</td><td><input type="text" name="Image" size="10000"></td>
+			<td>Desciption:</td><td><input type="text" class="text-input" name="Desc" size="50"></td>
 		</tr>
         <tr>
-			<td>product Desc:</td><td><input type="text" name="Desc" size="8000"></td>
+			<td>Category Id:</td><td><input type="number" class="number-input" name="Id"></td>
 		</tr>
-        <tr>
-			<td>category Id:</td><td><input type="number" name="Id" size="1"></td>
-		</tr>
-		<tr>
-			<td> <input type="submit" value="Submit"> </td> <td> <input type="reset" value="Reset"> </td>
-		</tr>
+    </tbody>
 	</table>
+			<div id="button-pair">
+            <input type="submit" class="button left" value="Submit">
+            <input type="reset" class="button right" value="Reset">
+			</div>
+
 </form>

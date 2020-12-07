@@ -15,7 +15,7 @@
     --on-error-colour: #000000;
     --text-shadow-colour: #000000;
     --button-bg-colour: #585858;
-    --button-hover-colour: #3700B3;
+    --button-hover-colour: #03DAC6;
 }
 
 body {
@@ -198,12 +198,9 @@ h1, h2, h3, h4 {
     width: 30%;
 }
 
-.login-form input, .text-input, .number-input {
+.login-form input {
     background-color: var(--alt-bg-colour);
     color: var(--on-background-colour);
-}
-
-.login-form input {
     margin-top: -5px;
 }
 
@@ -312,44 +309,7 @@ h1, h2, h3, h4 {
     margin: 10px 20px 0px 0px;
 }
 
-.submit:hover {
-    background-color: var(--button-hover-colour);
-}
-
 .button:hover {
     background-color: var(--button-hover-colour);
 }
-
-#button-pair {
-    margin-top: 5px;
-    display: inline-block;
-}
-
-#button-pair .button{
-    float: left;
-    margin: 10px 25px 0px 0px;
-}
-
-#sales-tables table {
-    margin-top: 20px;
-    max-width: 600px;
-    min-width: 600px;
-}
-
-.fat {
-    height: 20px;
-}
-
-#button-group {
-    width: 25%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 15px;
-}
-
-#button-group a {
-    margin: 5px 5px 5px 5px;
-}
-
-
 

@@ -56,7 +56,7 @@
 			</tbody>
 			{{/if}}
 
-
+			{{#if authenticatedUser}}
 			<form name="ReviewRedirect" method=post action="/review">
 				<table>
 					<tr>
@@ -65,7 +65,7 @@
 
 					<tr>
 						<td>Comment:</td>
-						<td><input type="textarea" name="reviewComment" size="80"></td>
+						<td><input type="textarea" class="text-input" name="reviewComment" size="80"></td>
 						<td>
 						<select name="reviewRating">
 						<option value=1>1 star</option>
@@ -81,5 +81,8 @@
 						<input class="button" type="submit" name="reviewSubmit" value="Submit">
 						<input class="button" type="reset" value="Reset">
 			</form>
+			{{else}}
+			<span id="no-review-text">Played it already? Register an account today and tell us what you thought!</span>
+			{{/if}}
 	</div>
 </div>

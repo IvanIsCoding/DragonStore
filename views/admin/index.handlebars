@@ -1,9 +1,9 @@
-<div>
+<div id="sales-tables">
 	<h3 class="generic-center">Administrator Sales Report by Day</h3>
-	<table class="dragon-table">
+	<table class="dragon-table sales-table">
 		<thead>
 			<tr>
-				<th>Order Date</th> <th>Total Order Amount</th>
+				<th>Order Date</th><th>Total Order Amount</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -14,10 +14,10 @@
 			{{/each}}
 		</tbody>
 	</table>
-			<table class="dragon-table">
+			<table class="dragon-table sales-table">
 		<thead>
 			<tr>
-				<th>Customers</th> <th>Number of orders</th>
+				<th>Customers</th><th>Number of orders</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -29,29 +29,23 @@
 		</tbody>
 	</table>
 
-	<table class="dragon-table">
+	<table class="dragon-table sales-table">
 		<thead>
 			<tr>
-				<th>Total order so far</th> <th>Revenue</th>
+				<th>Total order so far</th><th>Revenue</th>
 			</tr>
 		</thead>
 		<tbody>
 			{{#each Sale as | SaleData |}}
 				<tr>
-					<td>{{TotalSaleOrder}}</td> <td>{{formatPrice TotalSale}}</td>
+					<td>{{TotalSaleOrder}}</td><td>{{formatPrice TotalSale}}</td>
 				</tr>
 			{{/each}}
 		</tbody>
 	</table>
-<div class="button-group">
-	<span class="button"> 
-		<a href="admin/manageinsert">Insert</a> 
-	</span>
-	<span class="button"> 
-		<a href="admin/managedelete">Delete</a> 
-	</span>
-	<span class="button"> 
-		<a href="admin/manageupdate">Update</a> 
-	</span>
+<div id="button-group"> 
+		<a class="button space-right" href="admin/manageinsert">Insert</a> 
+		<a class="button space-right" href="admin/managedelete">Delete</a> 
+		<a class="button space-right" href="admin/manageupdate">Update</a> 
 </div>
 </div>

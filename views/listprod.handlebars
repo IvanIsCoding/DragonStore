@@ -1,14 +1,15 @@
 <div>
     <h1 class="search-title">Search products:</h1>
             <form class="search-title" method="get" action="listprod">           
-                <select size="1" name="categoryName">
+                <select size="1" class="button" name="categoryName">
                 {{#each categoryList as | category |}}
                     <option>{{category}}</option>
                 {{/each}}  
                 </select>
 
-                <input type="text" name="productName" size="40">
-                <input type="submit" value="Search"> <input type="reset" value="Clear">
+                <input type="text" class="text-input fat" name="productName" size="40">
+                <input type="submit" value="Search" class="button">
+                <input type="reset" value="Clear" class="button">
         </form>
     
     <h2 class="search-title">All Products</h2>
