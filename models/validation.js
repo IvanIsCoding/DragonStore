@@ -38,10 +38,19 @@ const validateEmail = (email) => {
     return !!matchedValue;
 };
 
-const validatePostalCode = (postalCode) => {
+const validateUSZipCode = (zipCode) => {
+    const matchedValue = postalCode.match(/^\d{5}(?:[-\s]\d{4})?$/);
+    return !!matchedValue;
+};
+
+const validateCanadianPostalCode = (postalCode) => {
     const matchedValue = postalCode.match(/^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/);
-    return matchedValue;
-}
+    return !!matchedValue;
+};
+
+const validatePostalCode = (postalCode) => {
+    return validateCanadianPostalCode(postalCode) || validateUSZipCode(postalCode);
+};
 
 const validateCountry = (country) => {
     return ["Canada", "United States"].includes(country);
@@ -92,7 +101,12 @@ const validatePaymentMethod = (method) => {
 };
 
 const validateCardNumber = (number) => {
-    return !isNaN(number); // False for strings, true for numbers
+    try {
+        const matchedValue = number.match(/^[0-9]+$/); // string contains only digits
+        return !!matchedValue;
+    } catch (err) {
+        return false;
+    }
 }
 
 const validateExpiryDate = (date) => {
