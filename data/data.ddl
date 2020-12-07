@@ -11,7 +11,6 @@ DROP TABLE IF EXISTS paymentmethod;
 DROP TABLE IF EXISTS customer;
 DROP TABLE IF EXISTS dragonadmin;
 
-/* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE customer (
     customerId          INT IDENTITY,
     firstName           VARCHAR(40),
@@ -25,7 +24,8 @@ CREATE TABLE customer (
     country             VARCHAR(40),
     userid              VARCHAR(20) NOT NULL,
     password            VARCHAR(30) NOT NULL,
-    PRIMARY KEY (customerId)
+    PRIMARY KEY (customerId),
+    CONSTRAINT Only_One_UserId UNIQUE(userid)   
 );
 
 CREATE TABLE paymentmethod (
@@ -87,7 +87,6 @@ CREATE TABLE orderproduct (
 );
 /* CHANGE TO DDL: incart needs to reference a specific customer as orderId is not known until checkout 
 replaced orderId with userId, a stored sessional variable referencing a customer*/
-/* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE incart (
     userId              VARCHAR(20),
     productId           INT,
@@ -96,6 +95,8 @@ CREATE TABLE incart (
     name                VARCHAR(200),
     PRIMARY KEY (userId,productId),
     FOREIGN KEY (productId) REFERENCES product(productId)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES customer(userid)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -138,13 +139,15 @@ CREATE TABLE review (
     FOREIGN KEY (customerId) REFERENCES customer(customerId)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE CASCADE
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT Only_One_Review UNIQUE(customerId, productId)  
 );
 
-/* TO DO: Add foreign key constrain for UserId?*/
 CREATE TABLE dragonadmin (
     userId          VARCHAR(20) NOT NULL,
-    PRIMARY KEY (userId)
+    PRIMARY KEY (userId),
+    FOREIGN KEY (userId) REFERENCES customer(userid)
+        ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 INSERT INTO category(categoryName) VALUES ('Action');

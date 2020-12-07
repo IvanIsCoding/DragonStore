@@ -38,7 +38,7 @@ const validateEmail = (email) => {
     return !!matchedValue;
 };
 
-const validateUSZipCode = (zipCode) => {
+const validateUSZipCode = (postalCode) => {
     const matchedValue = postalCode.match(/^\d{5}(?:[-\s]\d{4})?$/);
     return !!matchedValue;
 };
@@ -90,7 +90,7 @@ const notEmpty = (input) =>{
     if(!input){ // variable is null or undefined
         return false;
     }
-    return input.length > 3
+    return input.length > 0;
 };
 
 const validatePaymentType = (type) => {
