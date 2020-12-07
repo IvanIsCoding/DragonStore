@@ -67,6 +67,7 @@ app.set('view engine', 'handlebars');
 // Set up user global variable in all endpoints for user in header
 function setUpGlobalVariables(req, res, next) {
   res.locals.authenticatedUser = req.session.authenticatedUser;
+  res.locals.isAdmin = req.session.isAdmin;
   next();
 }
 app.all('*', setUpGlobalVariables);
